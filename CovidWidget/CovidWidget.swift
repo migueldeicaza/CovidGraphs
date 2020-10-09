@@ -52,7 +52,7 @@ struct GeographyStatView: View {
                         OneStat (caption: "Total", total: stat.totalCases, delta: stat.deltaCases)
                     Spacer ()
                         //OneStat (caption: "Recovered", major: stat.recoveredCases, minor: stat.deltaRecovered)
-                        OneStat (caption: "Deaths", total: stat.deaths, delta: stat.deltaDeaths)
+                    OneStat (caption: "Deaths", total: stat.totalDeaths, delta: stat.deltaDeaths)
 
                 }
                 
@@ -98,7 +98,7 @@ struct CovidWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        GeographyStatView(stat: us_ma_Stat)
+        GeographyStatView(stat: fetch(code: "25025.0"))
     }
 }
 

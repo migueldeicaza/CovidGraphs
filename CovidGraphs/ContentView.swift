@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SharedCode
 
 struct OneStat: View {
     var caption, major, minor: String
@@ -55,7 +56,7 @@ struct ContentView: View {
     var us_ma_Stat = Stats (caption: "Massachussets", totalCases: "135k", deltaCases: "+644", recoveredCases: "", deltaRecovered: "", deaths: "9,530", deltaDeaths: "+3")
     var us_Stat = Stats (caption: "United States", totalCases: "7.48M", deltaCases: "+34,491", recoveredCases: "", deltaRecovered: "", deaths: "210k", deltaDeaths: "+332")
     var world_Stat = Stats (caption: "Worldwide", totalCases: "35.4M", deltaCases: "", recoveredCases: "", deltaRecovered: "", deaths: "1.04M", deltaDeaths: "")
-
+    var x = fetch (code:"13321.0")
     var body: some View {
         VStack (alignment: .leading){
             GeographyStatView(stat: us_ma_Stat)
