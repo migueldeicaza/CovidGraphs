@@ -41,10 +41,10 @@ public struct SnapshotData: Codable {
 public struct Stats {
     public var caption: String
     public var subCaption: String?
-    public var totalCases, deltaCases: String
+    public var totalCases, deltaCases: Int
     public var cases: [Int]
     public var casesDelta: [Int]
-    public var totalDeaths, deltaDeaths: String
+    public var totalDeaths, deltaDeaths: Int
     public var deaths: [Int]
     public var deathsDelta: [Int]
 }
@@ -80,57 +80,7 @@ func load () -> (GlobalData, SnapshotData)?
 var gd: GlobalData!
 var sd: SnapshotData!
 
-var emptyStat = Stats(caption: "Taxachussets", subCaption: nil, totalCases: "1234", deltaCases: "+11", cases: [], casesDelta: [], totalDeaths: "897", deltaDeaths: "+2", deaths: [], deathsDelta: [])
-var fmt: NumberFormatter!
-var fmtNoDec: NumberFormatter!
-
-func fmtLarge (_ n: Int) -> String
-{
-    
-    switch n {
-    case let x where x < 0:
-        return "0."     // "0." as a flag to determine something went wrong
-        
-    case 0..<99999:
-        return fmt.string(from: NSNumber (value: n)) ?? "?"
-        
-    case 100000..<999999:
-        return (fmtNoDec.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
-        
-    default:
-        return fmtNoDec.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?" + "M"
-    }
-}
-
-func fmtDelta (_ n: Int) -> String
-{
-    
-    switch n {
-    case let x where x < 0:
-        return "-0"     // "-0" as a flag to determine something went wrong
-        
-    case 0..<9999:
-        return "+" + (fmt.string(from: NSNumber (value: n)) ?? "?")
-        
-    case 10000..<999999:
-        return "+" + (fmt.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
-        
-    default:
-        return "+" + (fmt.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?") + "M"
-    }
-}
-
-func initDataTools ()
-{
-    fmt = NumberFormatter()
-    fmt.numberStyle = .decimal
-    fmt.maximumFractionDigits = 2
-    
-    fmtNoDec = NumberFormatter()
-    fmtNoDec.numberStyle = .decimal
-    fmtNoDec.maximumFractionDigits = 0
-
-}
+var emptyStat = Stats(caption: "Taxachussets", subCaption: nil, totalCases: 1234, deltaCases: +11, cases: [], casesDelta: [], totalDeaths: 897, deltaDeaths: +2, deaths: [], deathsDelta: [])
 
 func makeDelta (_ v: [Int]) -> [Int]
 {
@@ -147,7 +97,6 @@ func makeDelta (_ v: [Int]) -> [Int]
 public func fetch (code: String) -> Stats
 {
     if gd == nil || sd == nil {
-        initDataTools ()
         if let (a, b) = load () {
             gd = a
             sd = b
@@ -190,15 +139,77 @@ public func fetch (code: String) -> Stats
     }
     return Stats (caption: caption,
                   subCaption: subcaption,
-                  totalCases: fmtLarge (totalCases),
-                  deltaCases: fmtDelta (deltaCases),
+                  totalCases: totalCases,
+                  deltaCases: deltaCases,
                   cases: snapshot.lastConfirmed,
                   casesDelta: makeDelta (snapshot.lastConfirmed),
-                  totalDeaths: fmtLarge (totalDeaths),
-                  deltaDeaths: fmtDelta (deltaDeaths),
+                  totalDeaths: totalDeaths,
+                  deltaDeaths: deltaDeaths,
                   deaths: snapshot.lastDeaths,
                   deathsDelta: makeDelta (snapshot.lastDeaths)
     )
 }
 
+
+var fmtDecimal: NumberFormatter = {
+    var fmt = NumberFormatter()
+    fmt.numberStyle = .decimal
+    fmt.maximumFractionDigits = 2
+    
+    return fmt
+} ()
+
+var fmtDecimal1: NumberFormatter = {
+    var fmt = NumberFormatter()
+    fmt.numberStyle = .decimal
+    fmt.maximumFractionDigits = 1
+    
+    return fmt
+} ()
+
+var fmtNoDecimal: NumberFormatter = {
+    var fmt = NumberFormatter()
+    fmt.numberStyle = .decimal
+    fmt.maximumFractionDigits = 0
+    return fmt
+} ()
+
+
+public func fmtLarge (_ n: Int) -> String
+{
+    switch n {
+    case let x where x < 0:
+        return "0."     // "0." as a flag to determine something went wrong
+        
+    case 0..<99999:
+        return fmtDecimal.string(from: NSNumber (value: n)) ?? "?"
+        
+    case 100000..<999999:
+        return (fmtNoDecimal.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
+        
+    default:
+        return fmtNoDecimal.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?" + "M"
+    }
+}
+
+public func fmtDigit (_ n: Int) -> String {
+    return fmtDecimal.string (from: NSNumber (value: n)) ?? "?"
+}
+
+public func fmtDelta (_ n: Int) -> String
+{
+    switch n {
+    case let x where x < 0:
+        return "-0"     // "-0" as a flag to determine something went wrong
+        
+    case 0..<9999:
+        return "+" + (fmtDecimal.string(from: NSNumber (value: n)) ?? "?")
+        
+    case 10000..<999999:
+        return "+" + (fmtDecimal1.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
+        
+    default:
+        return "+" + (fmtDecimal.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?") + "M"
+    }
+}
 

@@ -119,26 +119,26 @@ struct GeographyStatView: View {
                 Spacer ().frame(minHeight: 0)
                 VStack  {
                     HStack {
-                        Text (stat.deltaCases)
+                        Text (fmtDelta (stat.deltaCases))
                             .font (.title3)
                             .lineLimit(1)
                             
 
                             Spacer (minLength: 12)
-                            Text (stat.deltaDeaths)
+                            Text (fmtDelta (stat.deltaDeaths))
                                 .font (.title3)
                                 .lineLimit(1)
                                 
 
                     }.minimumScaleFactor(0.7)
                     HStack {
-                        Text (stat.totalCases)
+                        Text (family == .systemSmall ? fmtLarge (stat.totalCases) : fmtDigit (stat.totalCases))
                             .font(.footnote)
                             .foregroundColor(Color ("SubTextColor"))
                             .lineLimit(1)
                             .minimumScaleFactor(0.8  )
                         Spacer (minLength: 12)
-                        Text (stat.totalDeaths)
+                        Text (fmtLarge (stat.totalDeaths))
                             .font(.footnote)
                             .foregroundColor(Color ("SubTextColor"))
                             .lineLimit(1)
