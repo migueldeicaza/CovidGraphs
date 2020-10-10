@@ -11,6 +11,7 @@ let formatVersion = 1
 
 // Imported from the Json file
 public struct TrackedLocation: Codable {
+    public var title: String!
     public var admin: String!
     public var proviceState: String!
     public var countryRegion: String!
@@ -39,38 +40,20 @@ public struct SnapshotData: Codable {
 
 public struct Stats {
     public var caption: String
+    public var subCaption: String?
     public var totalCases, deltaCases: String
     public var cases: [Int]
+    public var casesDelta: [Int]
     public var totalDeaths, deltaDeaths: String
     public var deaths: [Int]
+    public var deathsDelta: [Int]
 }
-
-//public var us_ma_Stat = Stats (caption: "Massachussets", totalCases: "135k", deltaCases: "+644", deaths: "9,530", deltaDeaths: "+3")
-//public var us_Stat = Stats (caption: "United States", totalCases: "7.48M", deltaCases: "+34,491", deaths: "210k", deltaDeaths: "+332")
-//public var world_Stat = Stats (caption: "Worldwide", totalCases: "35.4M", deltaCases: "", deaths: "1.04M", deltaDeaths: "")
-
 
 func loadGlobalData (data: Data) -> GlobalData?
 {
     let d = JSONDecoder()
     d.dateDecodingStrategy = .iso8601
-    do {
-        return try d.decode(GlobalData.self, from: data)
-    } catch let DecodingError.dataCorrupted(context) {
-        print(context)
-    } catch let DecodingError.keyNotFound(key, context) {
-        print("Key '\(key)' not found:", context.debugDescription)
-        print("codingPath:", context.codingPath)
-    } catch let DecodingError.valueNotFound(value, context) {
-        print("Value '\(value)' not found:", context.debugDescription)
-        print("codingPath:", context.codingPath)
-    } catch let DecodingError.typeMismatch(type, context)  {
-        print("Type '\(type)' mismatch:", context.debugDescription)
-        print("codingPath:", context.codingPath)
-    } catch {
-        print("error: ", error)
-    }
-    return nil
+    return try? d.decode(GlobalData.self, from: data)
 }
 
 func loadSnapshotData (data: Data) -> SnapshotData?
@@ -97,8 +80,9 @@ func load () -> (GlobalData, SnapshotData)?
 var gd: GlobalData!
 var sd: SnapshotData!
 
-var emptyStat = Stats(caption: "Taxachussets", totalCases: "1234", deltaCases: "+11", cases: [], totalDeaths: "897", deltaDeaths: "+2", deaths: [])
+var emptyStat = Stats(caption: "Taxachussets", subCaption: nil, totalCases: "1234", deltaCases: "+11", cases: [], casesDelta: [], totalDeaths: "897", deltaDeaths: "+2", deaths: [], deathsDelta: [])
 var fmt: NumberFormatter!
+var fmtNoDec: NumberFormatter!
 
 func fmtLarge (_ n: Int) -> String
 {
@@ -111,10 +95,10 @@ func fmtLarge (_ n: Int) -> String
         return fmt.string(from: NSNumber (value: n)) ?? "?"
         
     case 100000..<999999:
-        return fmt.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?" + "k"
+        return (fmtNoDec.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
         
     default:
-        return fmt.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?" + "M"
+        return fmtNoDec.string(from: NSNumber (value: Float (n)/1000000.0)) ?? "?" + "M"
     }
 }
 
@@ -125,10 +109,10 @@ func fmtDelta (_ n: Int) -> String
     case let x where x < 0:
         return "-0"     // "-0" as a flag to determine something went wrong
         
-    case 0..<999:
+    case 0..<9999:
         return "+" + (fmt.string(from: NSNumber (value: n)) ?? "?")
         
-    case 1000..<999999:
+    case 10000..<999999:
         return "+" + (fmt.string(from: NSNumber (value: Float (n)/1000.0)) ?? "?") + "k"
         
     default:
@@ -140,25 +124,44 @@ func initDataTools ()
 {
     fmt = NumberFormatter()
     fmt.numberStyle = .decimal
+    fmt.maximumFractionDigits = 2
+    
+    fmtNoDec = NumberFormatter()
+    fmtNoDec.numberStyle = .decimal
+    fmtNoDec.maximumFractionDigits = 0
+
+}
+
+func makeDelta (_ v: [Int]) -> [Int]
+{
+    var result: [Int] = []
+    var last = v [0]
+    
+    for i in 1..<v.count {
+        result.append (v[i]-last)
+        last = v [i]
+    }
+    return result
 }
 
 public func fetch (code: String) -> Stats
 {
-    print ("code: \(code)")
     if gd == nil || sd == nil {
         initDataTools ()
         if let (a, b) = load () {
             gd = a
             sd = b
         } else {
-            emptyStat.caption = "Failure"
+            emptyStat.caption = "LOAD"
             return emptyStat
         }
     }
-    //let tl = gd.globals [code]
+    
     guard let snapshot = sd.snapshots [code] else {
+        emptyStat.caption = "CODE"
         return emptyStat
     }
+    let tl = gd.globals [code]!
     
     let last2Deaths = Array (snapshot.lastDeaths.suffix(2))
     let totalDeaths = last2Deaths[1]
@@ -166,13 +169,36 @@ public func fetch (code: String) -> Stats
     let last2Cases = Array(snapshot.lastConfirmed.suffix(2))
     let totalCases = last2Cases [1]
     let deltaCases = last2Cases[1]-last2Cases[0]
-    return Stats (caption: code,
+    
+    var caption: String
+    var subcaption: String?
+    
+    if tl.countryRegion == "US" {
+        if tl.admin == nil {
+            caption = tl.proviceState
+        } else {
+            caption = tl.admin
+            subcaption = tl.proviceState
+        }
+    } else {
+        if tl.proviceState == "" {
+            caption = tl.countryRegion
+        } else {
+            caption = tl.proviceState
+            subcaption = tl.countryRegion
+        }
+    }
+    return Stats (caption: caption,
+                  subCaption: subcaption,
                   totalCases: fmtLarge (totalCases),
                   deltaCases: fmtDelta (deltaCases),
-                  cases: snapshot.lastDeaths,
+                  cases: snapshot.lastConfirmed,
+                  casesDelta: makeDelta (snapshot.lastConfirmed),
                   totalDeaths: fmtLarge (totalDeaths),
                   deltaDeaths: fmtDelta (deltaDeaths),
-                  deaths: snapshot.lastDeaths)
+                  deaths: snapshot.lastDeaths,
+                  deathsDelta: makeDelta (snapshot.lastDeaths)
+    )
 }
 
 

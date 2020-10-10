@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -26,6 +26,7 @@
 		4985CF19252EB0B200C78B5D /* CovidData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CF18252EB0B200C78B5D /* CovidData.swift */; };
 		4985CF1D252EB0E100C78B5D /* SharedCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; };
 		4985CF1E252EB0E100C78B5D /* SharedCode.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		4985CF7F2530ADA100C78B5D /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 4985CF7E2530ADA100C78B5D /* Charts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +142,7 @@
 				4985CEDF252BD3C400C78B5D /* SwiftUI.framework in Frameworks */,
 				4985CF1D252EB0E100C78B5D /* SharedCode.framework in Frameworks */,
 				4985CEDD252BD3C400C78B5D /* WidgetKit.framework in Frameworks */,
+				4985CF7F2530ADA100C78B5D /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,6 +296,9 @@
 				4985CF20252EB0E100C78B5D /* PBXTargetDependency */,
 			);
 			name = CovidWidgetExtension;
+			packageProductDependencies = (
+				4985CF7E2530ADA100C78B5D /* Charts */,
+			);
 			productName = CovidWidgetExtension;
 			productReference = 4985CEDA252BD3C400C78B5D /* CovidWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -369,6 +374,9 @@
 				Base,
 			);
 			mainGroup = 4985CEBA252BD3A900C78B5D;
+			packageReferences = (
+				4985CF7D2530ADA100C78B5D /* XCRemoteSwiftPackageReference "swiftui-charts" */,
+			);
 			productRefGroup = 4985CEC4252BD3A900C78B5D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -832,6 +840,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4985CF7D2530ADA100C78B5D /* XCRemoteSwiftPackageReference "swiftui-charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swift-extensions/swiftui-charts";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4985CF7E2530ADA100C78B5D /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4985CF7D2530ADA100C78B5D /* XCRemoteSwiftPackageReference "swiftui-charts" */;
+			productName = Charts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4985CEBB252BD3A900C78B5D /* Project object */;
 }

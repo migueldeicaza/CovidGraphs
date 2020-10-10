@@ -9,53 +9,143 @@ import WidgetKit
 import SwiftUI
 import Intents
 import SharedCode
+import Charts
+import Shapes
 
-struct OneStat: View {
-    var caption, total, delta: String
+struct CovidChartView: View {
+    @Environment(\.redactionReasons) private var reasons
+
+    var stat: [Int]
     
-    var body: some View {
-        VStack (alignment: .trailing) {
-            //Text (caption).font(.footnote)
-            Text (delta)
-                .font (.title3)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-
-            Text (total)
-                .font(.footnote)
-                .foregroundColor(Color ("SubTextColor"))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8  )
-
-
+    // Maps from integers to 0..1
+    func convertStats (_ v: [Int]) -> [CGFloat]
+    {
+        if !reasons.isEmpty {
+            return []
         }
+        if let min = v.min () {
+            if let max = v.max () {
+                let d = CGFloat (max-min)
+                var result: [CGFloat] = []
+        
+                for x in v {
+                    result.append(CGFloat (x-min) / d)
+                }
+                print ("\(result)")
+                return result
+            }
+        }
+        return [0.0]
     }
-}
-struct GeographyStatView: View {
-    var stat: Stats
     
     var body: some View {
         ZStack {
-            Color ("BackgroundColor")
-            VStack (alignment: .leading){
+            //Color (.red)
+            HStack {
+                
+                VStack {
+                    Chart(data: convertStats (stat))
+                        .chartStyle(
+                           LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
+
+                        .background(
+                            GridPattern(horizontalLines: 8, verticalLines: 12)
+                               .inset(by: 1)
+                            .stroke(Color.white.opacity(0.1), style: .init(lineWidth: 1, lineCap: .round)))
+
+                        .frame(minHeight: 40, maxHeight: .infinity)
+               }
+               //.layoutPriority(1)
+            }
+        }
+    }
+}
+
+// Scenarios:
+//   countryRegion == "US" && admin = nil, this is a state in "provinceState"
+//   countryRegion == "US", state is provinceState, county is "admin"
+//   otherwise Country == specified, provinceRegion is the subregioin
+
+struct LocationView: View {
+    @Binding var stat: Stats
+    var body: some View {
+        ZStack {
+            //Color (.blue)
+            VStack {
                 HStack {
                     Text(stat.caption)
                         .bold()
                         .font (.body)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
-                        
+                    
                     Spacer ()
                 }
-                Spacer ()
-                HStack (alignment: .top, spacing: 5) {
-                        OneStat (caption: "Total", total: stat.totalCases, delta: stat.deltaCases)
-                    Spacer ()
-                        //OneStat (caption: "Recovered", major: stat.recoveredCases, minor: stat.deltaRecovered)
-                    OneStat (caption: "Deaths", total: stat.totalDeaths, delta: stat.deltaDeaths)
+                if let sub = stat.subCaption {
+                    HStack {
+                        Text (sub)
+                            .font (.footnote)
+                            .fontWeight(.light)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                        Spacer ()
+                    }
+                }
+            }
+        }
+    }
+}
 
-                }
+struct GeographyStatView: View {
+    @State var stat: Stats
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        ZStack {
+            Color ("BackgroundColor")
+            VStack (alignment: .leading, spacing: 2.0){
                 
+                LocationView(stat: $stat)
+                switch family {
+                case .systemSmall:
+                    CovidChartView (stat: stat.casesDelta)
+                default:
+                    HStack (spacing: 20){
+                        CovidChartView (stat: stat.casesDelta)
+                        CovidChartView (stat: stat.deathsDelta)
+                    }
+                }
+                //
+                Spacer ().frame(minHeight: 0)
+                VStack  {
+                    HStack {
+                        Text (stat.deltaCases)
+                            .font (.title3)
+                            .lineLimit(1)
+                            
+
+                            Spacer (minLength: 12)
+                            Text (stat.deltaDeaths)
+                                .font (.title3)
+                                .lineLimit(1)
+                                
+
+                    }.minimumScaleFactor(0.7)
+                    HStack {
+                        Text (stat.totalCases)
+                            .font(.footnote)
+                            .foregroundColor(Color ("SubTextColor"))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8  )
+                        Spacer (minLength: 12)
+                        Text (stat.totalDeaths)
+                            .font(.footnote)
+                            .foregroundColor(Color ("SubTextColor"))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8  )
+                    }
+                }
+
             }
             .foregroundColor(Color ("MainTextColor"))
             .padding()
@@ -98,7 +188,9 @@ struct CovidWidgetEntryView : View {
     var entry: Provider.Entry
 
     var body: some View {
-        GeographyStatView(stat: fetch(code: "25025.0"))
+        //GeographyStatView(stat: fetch(code: "Massachusetts"))
+        //GeographyStatView(stat: fetch(code: "13209.0"))
+        GeographyStatView(stat: fetch(code: "Spain"))
     }
 }
 
@@ -110,8 +202,8 @@ struct CovidWidget: Widget {
         IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
             CovidWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Covid Widget")
+        .description("Display statistics Covid Statistics.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemSmall])
 
     }
@@ -126,15 +218,20 @@ struct CovidWidget_Previews: PreviewProvider {
             CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
                 .previewContext(WidgetPreviewContext(family: .systemSmall))
                 .environment(\.colorScheme, .dark)
-            
-            CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
-                .previewContext(WidgetPreviewContext(family: .systemSmall))
-                .environment(\.sizeCategory, .extraExtraExtraLarge)
-            
+
             CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
                 .previewContext(WidgetPreviewContext(family: .systemSmall))
                 .redacted(reason: .placeholder)
 
+            CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
+                .previewContext(WidgetPreviewContext(family: .systemMedium))
+
+            CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
+                .previewContext(WidgetPreviewContext(family: .systemSmall))
+                .environment(\.sizeCategory, .extraExtraExtraLarge)
+
+
         }
     }
 }
+
