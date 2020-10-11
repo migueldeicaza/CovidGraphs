@@ -7,86 +7,182 @@
 
 import SwiftUI
 import SharedCode
+import Charts
+import Shapes
 
-struct OneStat: View {
-    var caption, major, minor: String
-    
+var spain = fetch(code: "Spain")
+var ma = fetch(code: "Massachusetts")
+var fr = fetch(code: "France")
+var x = fetch (code:"California")
+
+struct ResizableSingleLine: ViewModifier {
+    func body(content: Content) -> some View {
+            content
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+        }
+}
+struct StatDisplay: View {
+    @Binding var stat: Stats
     var body: some View {
-        VStack (alignment: .leading) {
-            Text (caption)
-                .font(.footnote)
-            Text (major)
-                .font(.title)
-            Text (minor)
-                .font (.footnote)
-                .foregroundColor(Color.gray)
+        HStack {
+            VStack (alignment: .leading) {
+                Text ("Deaths: ")
+                    .bold()
+                    .modifier(ResizableSingleLine())
+                Text ("Cases: ")
+                    .bold()
+                    .modifier(ResizableSingleLine())
+
+            }
+            .foregroundColor(.secondary)
+            Spacer ()
+            VStack (alignment: .trailing) {
+                Text ("+\(fmtDigit(stat.deltaDeaths))")
+                    .bold()
+                    .modifier(ResizableSingleLine())
+                Text ("+\(fmtDigit(stat.deltaCases))")
+                    .bold()
+                    .modifier(ResizableSingleLine())
+                    
+            }
+    
+
+            VStack (alignment: .trailing) {
+                Text ("\(fmtDigit(stat.totalDeaths))")
+                    .modifier(ResizableSingleLine())
+                Text ("\(fmtDigit(stat.totalCases))")
+                    .modifier(ResizableSingleLine())
+            }
+            .foregroundColor(.secondary)
+            .font(.body)
         }
     }
 }
-
-struct Stats {
-    var caption: String
-    var totalCases, deltaCases: String
-    var recoveredCases, deltaRecovered: String
-    var deaths, deltaDeaths: String
-}
-
-struct GeographyStatView: View {
-    var stat: Stats
-    
+struct LocationView: View {
+    @Binding var stat: Stats
     var body: some View {
-        VStack (alignment: .leading){
-            HStack {
-                Text(stat.caption).bold().font (.title2)
-                Spacer ()
-            }
-            
-            HStack (alignment: .top, spacing: 10) {
-                    OneStat (caption: "Total cases", major: stat.totalCases, minor: stat.deltaCases)
-                    OneStat (caption: "Recovered", major: stat.recoveredCases, minor: stat.deltaRecovered)
-                    OneStat (caption: "Deaths", major: stat.deaths, minor: stat.deltaDeaths)
+        ZStack {
+            //Color ("BackgroundColor")
+            VStack {
+                HStack {
+                    VStack {
+                        HStack {
+                            Text(stat.caption)
+                                .font (.title2)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            Spacer ()
+                        }
+                        if let sub = stat.subCaption {
+                            HStack {
+                                Text (sub)
+                                    .font (.title3)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                                    .foregroundColor(.secondary)
+                                Spacer ()
+                            }
+                        }
+                        Spacer ()
+                        StatDisplay(stat: $stat)
+                        
+                    }
+                    Chart(data: convertStats (stat.casesDelta))
+                        .chartStyle(
+                           LineChartStyle(.quadCurve, lineColor: Color ("BackgroundColor"), lineWidth: 2))
 
-            }
-        }.padding ()
-        .border(Color.gray, width: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/)
-        .padding ()
+                        .background(
+                            GridPattern(horizontalLines: 8, verticalLines: 12)
+                               .inset(by: 1)
+                                .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
+                        .padding ([.leading])
+
+                }
+            }.padding(8)
+        }
+        .frame(minHeight: 60, maxHeight: 100)
+        .padding([.leading, .trailing], 8)
+        .padding ([.bottom], 6)
     }
 }
-struct ContentView: View {
-    var us_ma_Stat = Stats (caption: "Massachussets", totalCases: "135k", deltaCases: "+644", recoveredCases: "", deltaRecovered: "", deaths: "9,530", deltaDeaths: "+3")
-    var us_Stat = Stats (caption: "United States", totalCases: "7.48M", deltaCases: "+34,491", recoveredCases: "", deltaRecovered: "", deaths: "210k", deltaDeaths: "+332")
-    var world_Stat = Stats (caption: "Worldwide", totalCases: "35.4M", deltaCases: "", recoveredCases: "", deltaRecovered: "", deaths: "1.04M", deltaDeaths: "")
-    var x = fetch (code:"California")
-    var body: some View {
-        VStack (alignment: .leading){
-            GeographyStatView(stat: us_ma_Stat)
-            VStack (alignment: .leading){
-                HStack {
-                    Text ("Massachusetts")
-                        .bold().font (.title2)
-                    Spacer ()
-                    Text ("644")
-                        .bold().font (.title2)
-                }
-                HStack {
-                    Text ("Hello")
-                    Spacer ()
-                    Text ("3")
-                }
-                
-                
-            }.padding ()
-            .foregroundColor(Color.white)
-            .background(Color.black)
 
-            GeographyStatView(stat: us_Stat)
-            GeographyStatView(stat: world_Stat)
+struct ContentView: View {
+    @State var locations: [Stats]
+    @State private var editMode = EditMode.inactive
+    
+    var body: some View {
+            NavigationView {
+                ZStack {
+                    VStack {
+                        ForEach(locations, id: \.caption) { loc in
+                            LocationView (stat: .constant (loc))
+                            Divider().background(Color (.secondaryLabel))
+                                .padding([.trailing,.leading], 8)
+                        }
+                        .navigationBarItems(leading: HeaderView (), trailing: EditButton())
+
+                        Spacer ()
+                    }
+                }
+
+            }
+
+    }
+}
+
+struct HeaderView: View {
+    func formatDate () -> String
+    {
+        let dateFormatter = DateFormatter ()
+        dateFormatter.dateFormat = "MMMM dd"
+        return dateFormatter.string(from: Date ())
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text ("Covid Statisitics")
+                    .font (.title)
+                    .bold()
+                Spacer ()
+            }
+            HStack {
+                Text (formatDate())
+                    .font (.title2)
+                    .bold()
+                    .foregroundColor(.secondary)
+                Spacer ()
+            }
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        Group {
+            ContentView(locations: [
+                fetch(code: "Spain"),
+                fetch(code: "Massachusetts"),
+                fetch(code: "46005.0"),
+                fetch (code:"California")
+            ])
+            ContentView(locations: [
+                fetch(code: "Spain"),
+                fetch(code: "Massachusetts"),
+                fetch(code: "46005.0"),
+                fetch (code:"California")
+            ])
+            .environment(\.colorScheme, .dark)
+            ContentView(locations: [
+                fetch(code: "Spain"),
+                fetch(code: "Massachusetts"),
+                fetch(code: "46005.0"),
+                fetch (code:"California")
+            ])
+            .environment(\.colorScheme, .dark)
+            .environment(\.sizeCategory, .extraExtraExtraLarge)
+
+        }
     }
 }

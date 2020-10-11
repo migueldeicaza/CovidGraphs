@@ -12,60 +12,6 @@ import SharedCode
 import Charts
 import Shapes
 
-struct CovidChartView: View {
-    @Environment(\.redactionReasons) private var reasons
-
-    var stat: [Int]
-    
-    // Maps from integers to 0..1
-    func convertStats (_ v: [Int]) -> [CGFloat]
-    {
-        if !reasons.isEmpty {
-            return []
-        }
-        if let min = v.min () {
-            if let max = v.max () {
-                let d = CGFloat (max-min)
-                var result: [CGFloat] = []
-        
-                for x in v {
-                    result.append(CGFloat (x-min) / d)
-                }
-                print ("\(result)")
-                return result
-            }
-        }
-        return [0.0]
-    }
-    
-    var body: some View {
-        ZStack {
-            //Color (.red)
-            HStack {
-                
-                VStack {
-                    Chart(data: convertStats (stat))
-                        .chartStyle(
-                           LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
-
-                        .background(
-                            GridPattern(horizontalLines: 8, verticalLines: 12)
-                               .inset(by: 1)
-                            .stroke(Color.white.opacity(0.1), style: .init(lineWidth: 1, lineCap: .round)))
-
-                        .frame(minHeight: 40, maxHeight: .infinity)
-               }
-               //.layoutPriority(1)
-            }
-        }
-    }
-}
-
-// Scenarios:
-//   countryRegion == "US" && admin = nil, this is a state in "provinceState"
-//   countryRegion == "US", state is provinceState, county is "admin"
-//   otherwise Country == specified, provinceRegion is the subregioin
-
 struct LocationView: View {
     @Binding var stat: Stats
     var body: some View {
@@ -95,6 +41,39 @@ struct LocationView: View {
         }
     }
 }
+
+struct CovidChartView: View {
+    @Environment(\.redactionReasons) private var reasons
+
+    var stat: [Int]
+    
+    var body: some View {
+        ZStack {
+            //Color (.red)
+            HStack {
+                
+                VStack {
+                    Chart(data: reasons.isEmpty ? [] : convertStats (stat))
+                        .chartStyle(
+                           LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
+
+                        .background(
+                            GridPattern(horizontalLines: 8, verticalLines: 12)
+                               .inset(by: 1)
+                            .stroke(Color.white.opacity(0.1), style: .init(lineWidth: 1, lineCap: .round)))
+
+                        .frame(minHeight: 40, maxHeight: .infinity)
+               }
+               //.layoutPriority(1)
+            }
+        }
+    }
+}
+
+// Scenarios:
+//   countryRegion == "US" && admin = nil, this is a state in "provinceState"
+//   countryRegion == "US", state is provinceState, county is "admin"
+//   otherwise Country == specified, provinceRegion is the subregioin
 
 struct GeographyStatView: View {
     @State var stat: Stats
@@ -225,6 +204,9 @@ struct CovidWidget_Previews: PreviewProvider {
 
             CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
                 .previewContext(WidgetPreviewContext(family: .systemMedium))
+
+            CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
+                .previewContext(WidgetPreviewContext(family: .systemLarge))
 
             CovidWidgetEntryView(entry: SimpleEntry(date: Date(), configuration: ConfigurationIntent()))
                 .previewContext(WidgetPreviewContext(family: .systemSmall))

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		491609CF25335F9900ECDFC1 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609CE25335F9900ECDFC1 /* Utilities.swift */; };
+		491609D025335F9900ECDFC1 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609CE25335F9900ECDFC1 /* Utilities.swift */; };
+		491609D62533600900ECDFC1 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 491609D52533600900ECDFC1 /* Charts */; };
 		4985CEC7252BD3A900C78B5D /* CovidGraphsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEC6252BD3A900C78B5D /* CovidGraphsApp.swift */; };
 		4985CEC9252BD3A900C78B5D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEC8252BD3A900C78B5D /* ContentView.swift */; };
 		4985CECB252BD3AA00C78B5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4985CECA252BD3AA00C78B5D /* Assets.xcassets */; };
@@ -151,6 +154,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		491609CE25335F9900ECDFC1 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		4985CEC3252BD3A900C78B5D /* CovidGraphs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CovidGraphs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4985CEC6252BD3A900C78B5D /* CovidGraphsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CovidGraphsApp.swift; sourceTree = "<group>"; };
 		4985CEC8252BD3A900C78B5D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4985CF0C252EB09800C78B5D /* SharedCode.framework in Frameworks */,
+				491609D62533600900ECDFC1 /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,6 +240,7 @@
 		4985CEBA252BD3A900C78B5D = {
 			isa = PBXGroup;
 			children = (
+				498E96DA25327039005FDBC4 /* SharedSource */,
 				4985CEC5252BD3A900C78B5D /* CovidGraphs */,
 				4985CEE0252BD3C400C78B5D /* CovidWidget */,
 				4985CEF8252EB09800C78B5D /* SharedCode */,
@@ -352,6 +358,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		498E96DA25327039005FDBC4 /* SharedSource */ = {
+			isa = PBXGroup;
+			children = (
+				491609CE25335F9900ECDFC1 /* Utilities.swift */,
+			);
+			path = SharedSource;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -385,6 +399,9 @@
 				498E965125315C1A005FDBC4 /* PBXTargetDependency */,
 			);
 			name = CovidGraphs;
+			packageProductDependencies = (
+				491609D52533600900ECDFC1 /* Charts */,
+			);
 			productName = CovidGraphs;
 			productReference = 4985CEC3252BD3A900C78B5D /* CovidGraphs.app */;
 			productType = "com.apple.product-type.application";
@@ -600,6 +617,7 @@
 				4985CEC9252BD3A900C78B5D /* ContentView.swift in Sources */,
 				4985CEC7252BD3A900C78B5D /* CovidGraphsApp.swift in Sources */,
 				498E967525321513005FDBC4 /* CovidViews.swift in Sources */,
+				491609CF25335F9900ECDFC1 /* Utilities.swift in Sources */,
 				4985CEE8252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -608,6 +626,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				491609D025335F9900ECDFC1 /* Utilities.swift in Sources */,
 				4985CEE7252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,
 				4985CEE2252BD3C400C78B5D /* CovidWidget.swift in Sources */,
 			);
@@ -1151,6 +1170,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		491609D52533600900ECDFC1 /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4985CF7D2530ADA100C78B5D /* XCRemoteSwiftPackageReference "swiftui-charts" */;
+			productName = Charts;
+		};
 		4985CF7E2530ADA100C78B5D /* Charts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4985CF7D2530ADA100C78B5D /* XCRemoteSwiftPackageReference "swiftui-charts" */;
