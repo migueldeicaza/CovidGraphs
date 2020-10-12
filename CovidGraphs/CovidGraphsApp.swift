@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import SharedCode
 
 @main
 struct CovidGraphsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(locations: [])
+            ContentView(locations: [
+                fetch(code: "Spain"),
+                fetch(code: "Massachusetts"),
+                fetch(code: "46005.0"),
+                fetch (code:"California")
+            ])
         }
     }
 }

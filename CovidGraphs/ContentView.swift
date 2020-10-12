@@ -10,11 +10,6 @@ import SharedCode
 import Charts
 import Shapes
 
-var spain = fetch(code: "Spain")
-var ma = fetch(code: "Massachusetts")
-var fr = fetch(code: "France")
-var x = fetch (code:"California")
-
 struct ResizableSingleLine: ViewModifier {
     func body(content: Content) -> some View {
             content
@@ -22,6 +17,7 @@ struct ResizableSingleLine: ViewModifier {
                 .minimumScaleFactor(0.5)
         }
 }
+
 struct StatDisplay: View {
     @Binding var stat: Stats
     var body: some View {
@@ -59,46 +55,45 @@ struct StatDisplay: View {
         }
     }
 }
-struct LocationView: View {
+
+struct SummaryLocationView: View {
     @Binding var stat: Stats
     var body: some View {
         ZStack {
             //Color ("BackgroundColor")
-            VStack {
-                HStack {
-                    VStack {
+            HStack {
+                VStack {
+                    HStack {
+                        Text(stat.caption)
+                            .font (.title2)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                        Spacer ()
+                    }
+                    if let sub = stat.subCaption {
                         HStack {
-                            Text(stat.caption)
-                                .font (.title2)
+                            Text (sub)
+                                .font (.title3)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
+                                .foregroundColor(.secondary)
                             Spacer ()
                         }
-                        if let sub = stat.subCaption {
-                            HStack {
-                                Text (sub)
-                                    .font (.title3)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.7)
-                                    .foregroundColor(.secondary)
-                                Spacer ()
-                            }
-                        }
-                        Spacer ()
-                        StatDisplay(stat: $stat)
-                        
                     }
-                    Chart(data: convertStats (stat.casesDelta))
-                        .chartStyle(
-                           LineChartStyle(.quadCurve, lineColor: Color ("BackgroundColor"), lineWidth: 2))
-
-                        .background(
-                            GridPattern(horizontalLines: 8, verticalLines: 12)
-                               .inset(by: 1)
-                                .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
-                        .padding ([.leading])
-
+                    Spacer ()
+                    StatDisplay(stat: $stat)
+                    
                 }
+                Chart(data: convertStats (stat.casesDelta, count: 40))
+                    .chartStyle(
+                        LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
+
+                    .background(
+                        GridPattern(horizontalLines: 8, verticalLines: 12)
+                           .inset(by: 1)
+                            .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
+                    .padding ([.leading])
+
             }.padding(8)
         }
         .frame(minHeight: 60, maxHeight: 100)
@@ -116,7 +111,7 @@ struct ContentView: View {
                 ZStack {
                     VStack {
                         ForEach(locations, id: \.caption) { loc in
-                            LocationView (stat: .constant (loc))
+                            SummaryLocationView (stat: .constant (loc))
                             Divider().background(Color (.secondaryLabel))
                                 .padding([.trailing,.leading], 8)
                         }

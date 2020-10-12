@@ -65,7 +65,8 @@ func loadSnapshotData (data: Data) -> SnapshotData?
 
 func load () -> (GlobalData, SnapshotData)?
 {
-    if let gd = try? Data(contentsOf: URL (fileURLWithPath: "/tmp/global")) {
+    let filePath = Bundle.main.url(forResource: "global", withExtension: "")
+    if let gd = try? Data(contentsOf: filePath!) {
         if let id = try? Data (contentsOf: URL (fileURLWithPath: "/tmp/individual")){
             if let lgd = loadGlobalData(data: gd) {
                 if let lsd = loadSnapshotData(data: id) {

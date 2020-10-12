@@ -51,9 +51,8 @@ struct CovidChartView: View {
         ZStack {
             //Color (.red)
             HStack {
-                
                 VStack {
-                    Chart(data: reasons.isEmpty ? [] : convertStats (stat))
+                    Chart(data: reasons.isEmpty ? convertStats (stat, count: 20) :  [])
                         .chartStyle(
                            LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
 
