@@ -9,6 +9,7 @@ import SwiftUI
 import SharedCode
 import Charts
 import Shapes
+import MapKit
 
 struct MainTitle: View {
     @Binding var stat: Stats
@@ -169,19 +170,33 @@ struct LabeledChart: View {
 struct LocationDetailView: View {
     @State var stat: Stats
     @State var days = 120
+    @State var coordinateRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 44.41, longitude: -98.27),
+       span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2))
+    
     var body: some View {
         VStack {
             VStack {
                 MainTitle (stat: $stat)
                 Divider ()
+                Map (coordinateRegion: $coordinateRegion)
                 LocationDetailSummaryView (stat: $stat)
                     .frame(maxHeight: 60)
             }.padding ([.leading, .trailing], 20)
             Divider ()
-            TimeSelectorView (days: $days)
-            LabeledChart (data: $stat.casesDelta, days: $days, overlay: "Cases")
-            LabeledChart (data: $stat.deathsDelta, days: $days, overlay: "Deaths")
-            Spacer()
+            ScrollView {
+                TimeSelectorView (days: $days)
+                LabeledChart (data: $stat.casesDelta, days: $days, overlay: "Cases")
+                    .frame (minHeight: 200)
+                LabeledChart (data: $stat.deathsDelta, days: $days, overlay: "Deaths")
+                    .frame (minHeight: 200)
+            }
+        }.onAppear {
+
+            coordinateRegion = MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: Double (stat.lat ?? "44.414") ?? 0,
+                                               longitude: Double (stat.long ?? "-98.27") ?? 0),
+                span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2))
         }
     }
 }

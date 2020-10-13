@@ -9,7 +9,7 @@ import Foundation
 
 let formatVersion = 1
 
-// Imported from the Json file
+/// Imported from the Json file
 public struct TrackedLocation: Codable {
     public var title: String!
     public var admin: String!
@@ -26,10 +26,17 @@ public struct Snapshot: Codable {
     public var lastConfirmed: [Int]!
 }
 
+/// All of the locations we are tracking
 public struct GlobalData: Codable {
     public var time: Date = Date()
     public var version: Int = formatVersion
     public var globals: [String:TrackedLocation] = [:]
+}
+
+public struct IndividualSnapshot: Codable {
+    public var time: Date = Date()
+    public var version: Int = formatVersion
+    public var snapshot: Snapshot
 }
 
 public struct SnapshotData: Codable {
@@ -38,50 +45,119 @@ public struct SnapshotData: Codable {
     public var snapshots: [String:Snapshot] = [:]
 }
 
-public struct Stats {
+/// Contains the data for a given location
+public struct Stats: Hashable {
+    public var updateTime: Date
+    
+    /// Caption for the location
     public var caption: String
+    /// Subcation to show for the location
     public var subCaption: String?
-    public var totalCases, deltaCases: Int
+    /// Total number of cases for that location
+    public var totalCases: Int
+    /// Number of new cases in the last day for that location
+    public var deltaCases: Int
+    /// Array of total cases since the beginning
     public var cases: [Int]
+    /// Array of change of cases per day
     public var casesDelta: [Int]
-    public var totalDeaths, deltaDeaths: Int
+    /// Total number of deaths in that location
+    public var totalDeaths: Int
+    /// Total of new deaths in the last day for that location
+    public var deltaDeaths: Int
+    /// Array of total deaths since the beginning
     public var deaths: [Int]
+    /// Array of changes in deaths since the beginning
     public var deathsDelta: [Int]
+    public var lat, long: String!
 }
 
-func loadGlobalData (data: Data) -> GlobalData?
-{
+func makeDecoder () -> JSONDecoder {
     let d = JSONDecoder()
     d.dateDecodingStrategy = .iso8601
-    return try? d.decode(GlobalData.self, from: data)
+    return d
 }
 
-func loadSnapshotData (data: Data) -> SnapshotData?
-{
-    let d = JSONDecoder()
-    d.dateDecodingStrategy = .iso8601
-    return try? d.decode(SnapshotData.self, from: data)
-}
-
-func load () -> (GlobalData, SnapshotData)?
-{
-    let filePath = Bundle.main.url(forResource: "global", withExtension: "")
-    if let gd = try? Data(contentsOf: filePath!) {
-        if let id = try? Data (contentsOf: URL (fileURLWithPath: "/tmp/individual")){
-            if let lgd = loadGlobalData(data: gd) {
-                if let lsd = loadSnapshotData(data: id) {
-                    return (lgd, lsd)
+public class UpdatableStats: ObservableObject {
+    @Published var stat: Stats? = nil
+    var code: String
+    var tl: TrackedLocation!
+    
+    public init (code: String)
+    {
+        self.code = code
+        self.tl = globalData.globals [code]
+        load ()
+    }
+    
+    func load (){
+        let url = URL(string: "https://tirania.org/covid-data/\(code)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let task = URLSession.shared.dataTask(with: request) {(data, response, error) in
+            guard error == nil else {
+                print ("error: \(error!)")
+                return
+            }
+            
+            guard let content = data else {
+                print("No data")
+                return
+            }
+            let decoder = makeDecoder()
+            if let isnap = try? decoder.decode(IndividualSnapshot.self, from: content) {
+                DispatchQueue.main.async {
+                    self.stat = makeStat(trackedLocation: self.tl, snapshot: isnap.snapshot, date: isnap.time)
+                    print ("Data loaded")
                 }
             }
         }
+        task.resume()
     }
-    return nil
 }
 
-var gd: GlobalData!
+extension IndividualSnapshot {
+ 
+    static public func tryLoadCache (name: String) -> IndividualSnapshot?
+    {
+        if let cacheDir = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+            let file = cacheDir.appendingPathComponent(name)
+            
+            if let data = try? Data (contentsOf: file) {
+                let decoder = makeDecoder()
+                if let snapshot = try? decoder.decode(IndividualSnapshot.self, from: data) {
+                    return snapshot
+                }
+            }
+        }
+        return nil
+    }
+}
+
+func load () -> SnapshotData
+{
+    let idata = try! Data (contentsOf: URL (fileURLWithPath: "/tmp/individual"))
+    let d = makeDecoder()
+    return try! d.decode(SnapshotData.self, from: idata)
+}
+
+public var globalData: GlobalData = {
+    let filePath = Bundle.main.url(forResource: "global", withExtension: "")
+    if let gd = try? Data(contentsOf: filePath!) {
+        let d = makeDecoder()
+        return try! d.decode(GlobalData.self, from: gd)
+    }
+    abort ()
+}()
+    
 var sd: SnapshotData!
 
-var emptyStat = Stats(caption: "Taxachussets", subCaption: nil, totalCases: 1234, deltaCases: +11, cases: [], casesDelta: [], totalDeaths: 897, deltaDeaths: +2, deaths: [], deathsDelta: [])
+var emptyStat = Stats(updateTime: Date(), caption: "Taxachussets", subCaption: nil,
+                      totalCases: 1234, deltaCases: +11,
+                      cases: [], casesDelta: [],
+                      totalDeaths: 897, deltaDeaths: +2,
+                      deaths: [], deathsDelta: [])
 
 func makeDelta (_ v: [Int]) -> [Int]
 {
@@ -95,24 +171,8 @@ func makeDelta (_ v: [Int]) -> [Int]
     return result
 }
 
-public func fetch (code: String) -> Stats
+public func makeStat (trackedLocation: TrackedLocation, snapshot: Snapshot, date: Date = Date()) -> Stats
 {
-    if gd == nil || sd == nil {
-        if let (a, b) = load () {
-            gd = a
-            sd = b
-        } else {
-            emptyStat.caption = "LOAD"
-            return emptyStat
-        }
-    }
-    
-    guard let snapshot = sd.snapshots [code] else {
-        emptyStat.caption = "CODE"
-        return emptyStat
-    }
-    let tl = gd.globals [code]!
-    
     let last2Deaths = Array (snapshot.lastDeaths.suffix(2))
     let totalDeaths = last2Deaths[1]
     let deltaDeaths = last2Deaths[1]-last2Deaths[0]
@@ -123,22 +183,23 @@ public func fetch (code: String) -> Stats
     var caption: String
     var subcaption: String?
     
-    if tl.countryRegion == "US" {
-        if tl.admin == nil {
-            caption = tl.proviceState
+    if trackedLocation.countryRegion == "US" {
+        if trackedLocation.admin == nil {
+            caption = trackedLocation.proviceState
         } else {
-            caption = tl.admin
-            subcaption = tl.proviceState
+            caption = trackedLocation.admin
+            subcaption = trackedLocation.proviceState
         }
     } else {
-        if tl.proviceState == "" {
-            caption = tl.countryRegion
+        if trackedLocation.proviceState == "" {
+            caption = trackedLocation.countryRegion
         } else {
-            caption = tl.proviceState
-            subcaption = tl.countryRegion
+            caption = trackedLocation.proviceState
+            subcaption = trackedLocation.countryRegion
         }
     }
-    return Stats (caption: caption,
+    return Stats (updateTime: date,
+                  caption: caption,
                   subCaption: subcaption,
                   totalCases: totalCases,
                   deltaCases: deltaCases,
@@ -147,8 +208,26 @@ public func fetch (code: String) -> Stats
                   totalDeaths: totalDeaths,
                   deltaDeaths: deltaDeaths,
                   deaths: snapshot.lastDeaths,
-                  deathsDelta: makeDelta (snapshot.lastDeaths)
-    )
+                  deathsDelta: makeDelta (snapshot.lastDeaths),
+                  lat: trackedLocation.lat,
+                  long: trackedLocation.long)
+}
+
+
+public func fetch (code: String) -> Stats
+{
+    sd = load ()
+    
+    guard let snapshot = sd.snapshots [code] else {
+        emptyStat.caption = "CODE"
+        return emptyStat
+    }
+    guard let tl = globalData.globals [code] else {
+        emptyStat.caption = "GLOBAL"
+        return emptyStat
+    }
+        
+    return makeStat (trackedLocation: tl, snapshot: snapshot)
 }
 
 

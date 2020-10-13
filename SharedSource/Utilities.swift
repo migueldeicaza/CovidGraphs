@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import Combine
+import SharedCode
 
 /**
  * Given an array of numbers, takes the last `count` numbers (or all, if the value -1 is passed)
@@ -47,3 +49,4 @@ func getBounds (_ v: [Int], count: Int = -1) -> (min: Int, max: Int)
     }
     return (0, 1)
 }
+

@@ -110,7 +110,7 @@ struct ContentView: View {
             NavigationView {
                 ZStack {
                     VStack {
-                        ForEach(locations, id: \.caption) { loc in
+                        ForEach(locations, id: \.self) { loc in
                             SummaryLocationView (stat: .constant (loc))
                             Divider().background(Color (.secondaryLabel))
                                 .padding([.trailing,.leading], 8)
@@ -162,21 +162,21 @@ struct ContentView_Previews: PreviewProvider {
                 fetch(code: "46005.0"),
                 fetch (code:"California")
             ])
-            ContentView(locations: [
-                fetch(code: "Spain"),
-                fetch(code: "Massachusetts"),
-                fetch(code: "46005.0"),
-                fetch (code:"California")
-            ])
-            .environment(\.colorScheme, .dark)
-            ContentView(locations: [
-                fetch(code: "Spain"),
-                fetch(code: "Massachusetts"),
-                fetch(code: "46005.0"),
-                fetch (code:"California")
-            ])
-            .environment(\.colorScheme, .dark)
-            .environment(\.sizeCategory, .extraExtraExtraLarge)
+//            ContentView(locations: [
+//                fetch(code: "Spain"),
+//                fetch(code: "Massachusetts"),
+//                fetch(code: "46005.0"),
+//                fetch (code:"California")
+//            ])
+//            .environment(\.colorScheme, .dark)
+//            ContentView(locations: [
+//                fetch(code: "Spain"),
+//                fetch(code: "Massachusetts"),
+//                fetch(code: "46005.0"),
+//                fetch (code:"California")
+//            ])
+//            .environment(\.colorScheme, .dark)
+//            .environment(\.sizeCategory, .extraExtraExtraLarge)
 
         }
     }

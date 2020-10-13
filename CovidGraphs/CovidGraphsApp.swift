@@ -13,10 +13,10 @@ struct CovidGraphsApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(locations: [
-                fetch(code: "Spain"),
-                fetch(code: "Massachusetts"),
-                fetch(code: "46005.0"),
-                fetch (code:"California")
+//                fetch(code: "Spain"),
+//                fetch(code: "Massachusetts"),
+//                fetch(code: "46005.0"),
+//                fetch (code:"California")
             ])
         }
     }
