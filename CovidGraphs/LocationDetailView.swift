@@ -201,15 +201,43 @@ struct LocationDetailView: View {
     }
 }
 
+///
+/// Shows a LocationDetailView with a close button
+///
+struct PresentLocationAsSheet: View {
+    var stat: Stats
+    @Binding var showingDetail: Bool
+    
+    var body: some View {
+        VStack {
+            ZStack {
+                LocationDetailView (stat: stat)
+                VStack {
+                    HStack {
+                        Spacer ()
+                        Button(action: { self.showingDetail = false}) {
+                            Image(systemName: "multiply.circle.fill")
+                                .font(.system(size: 24, weight: .regular))
+                                .padding([.trailing], 10)
+                        }
+                    }
+                    Spacer ()
+                }
+            }
+        }.padding (.top, 10)
+    }
+}
+
 struct LocationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
+            //Text ("hi")
             LocationDetailView(stat: fetch(code: "46005.0"))
-            LocationDetailView(stat: fetch(code: "Massachusetts"))
-                .environment(\.colorScheme, .dark)
-            LocationDetailView(stat: fetch(code: "46005.0"))
-                .environment(\.sizeCategory, .extraExtraExtraLarge)
-            LocationDetailView(stat: fetch(code: "California"))
+//            LocationDetailView(stat: fetch(code: "Massachusetts"))
+//                .environment(\.colorScheme, .dark)
+//            LocationDetailView(stat: fetch(code: "46005.0"))
+//                .environment(\.sizeCategory, .extraExtraExtraLarge)
+//            LocationDetailView(stat: fetch(code: "California"))
         }
 
     }

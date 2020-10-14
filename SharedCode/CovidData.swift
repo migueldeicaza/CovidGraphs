@@ -139,7 +139,13 @@ func load () -> SnapshotData
 {
     let idata = try! Data (contentsOf: URL (fileURLWithPath: "/tmp/individual"))
     let d = makeDecoder()
-    return try! d.decode(SnapshotData.self, from: idata)
+    do {
+        let k = try d.decode(SnapshotData.self, from: idata)
+        return k
+    } catch {
+        print ("error")
+    }
+    abort ()
 }
 
 public var globalData: GlobalData = {
@@ -216,12 +222,15 @@ public func makeStat (trackedLocation: TrackedLocation, snapshot: Snapshot, date
 
 public func fetch (code: String) -> Stats
 {
-    sd = load ()
-    
-    guard let snapshot = sd.snapshots [code] else {
-        emptyStat.caption = "CODE"
+    let idata = try! Data (contentsOf: URL (fileURLWithPath: "/tmp/ind/\(code)"))
+    let d = makeDecoder()
+
+    guard let k = try? d.decode(IndividualSnapshot.self, from: idata) else {
+        emptyStat.caption = "INDFILE"
         return emptyStat
     }
+
+    let snapshot = k.snapshot
     guard let tl = globalData.globals [code] else {
         emptyStat.caption = "GLOBAL"
         return emptyStat
@@ -276,9 +285,10 @@ public func fmtDigit (_ n: Int) -> String {
     return fmtDecimal.string (from: NSNumber (value: n)) ?? "?"
 }
 
-public func fmtDelta (_ n: Int) -> String
+// If compress is true, it attempts to compress the text, otherwise it does not
+public func fmtDelta (_ n: Int, compress: Bool = true) -> String
 {
-    switch n {
+    switch compress ? n : 0 {
     case let x where x < 0:
         return "-0"     // "-0" as a flag to determine something went wrong
         

@@ -97,13 +97,13 @@ struct GeographyStatView: View {
                 Spacer ().frame(minHeight: 0)
                 VStack  {
                     HStack {
-                        Text (fmtDelta (stat.deltaCases))
+                        Text (fmtDelta (stat.deltaCases, compress: family == .systemSmall))
                             .font (.title3)
                             .lineLimit(1)
                             
 
                             Spacer (minLength: 12)
-                            Text (fmtDelta (stat.deltaDeaths))
+                            Text (fmtDelta (stat.deltaDeaths, compress: family == .systemSmall))
                                 .font (.title3)
                                 .lineLimit(1)
                                 

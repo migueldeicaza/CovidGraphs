@@ -10,14 +10,21 @@ import SharedCode
 
 @main
 struct CovidGraphsApp: App {
+    @AppStorage ("locations")
+    var locations: String = "Massachusetts,California,Spain"
+    
+    func makeLocations (input: String) -> [Stats]
+    {
+        var res: [Stats] = []
+        
+        for x in input.split(separator: ",") {
+            res.append (fetch (code: String (x)))
+        }
+        return res
+    }
     var body: some Scene {
         WindowGroup {
-            ContentView(locations: [
-//                fetch(code: "Spain"),
-//                fetch(code: "Massachusetts"),
-//                fetch(code: "46005.0"),
-//                fetch (code:"California")
-            ])
+            ContentView(locations: makeLocations(input: locations))
         }
     }
 }

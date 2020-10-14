@@ -102,27 +102,63 @@ struct SummaryLocationView: View {
     }
 }
 
+class TapTracker: ObservableObject {
+    var stat: Stats?
+}
+
+
 struct ContentView: View {
     @State var locations: [Stats]
     @State private var editMode = EditMode.inactive
-    
+    @State var showingDetail = false
+    var tapTracker = TapTracker ()
+
     var body: some View {
             NavigationView {
                 ZStack {
                     VStack {
-                        ForEach(locations, id: \.self) { loc in
-                            SummaryLocationView (stat: .constant (loc))
-                            Divider().background(Color (.secondaryLabel))
-                                .padding([.trailing,.leading], 8)
-                        }
-                        .navigationBarItems(leading: HeaderView (), trailing: EditButton())
-
+                        List {
+                            ForEach(locations, id: \.self) { loc in
+                        
+                                SummaryLocationView (stat: .constant (loc))
+                                    .onTapGesture {
+                                        tapTracker.stat = loc
+                                        showingDetail = true
+                                    }
+                            }
+                            .onDelete(perform: onDelete)
+                            .onMove(perform: onMove)
+                        }.listStyle(InsetListStyle())
+                        .navigationBarItems(leading: HeaderView (), trailing: editAddButton)
+                        .environment(\.editMode, $editMode)
                         Spacer ()
                     }
                 }
-
+            }.sheet(isPresented: $showingDetail) {
+                PresentLocationAsSheet (stat: tapTracker.stat!, showingDetail: $showingDetail)
             }
 
+    }
+    
+    var editAddButton: some View {
+        HStack {
+            if editMode == .active {
+                Button(action: onAdd) { Image(systemName: "plus") }
+            }
+            EditButton ()
+        }
+    }
+    
+    func onAdd () {
+        
+    }
+    
+    func onDelete(offsets: IndexSet) {
+        locations.remove(atOffsets: offsets)
+    }
+
+    func onMove(source: IndexSet, destination: Int) {
+        locations.move(fromOffsets: source, toOffset: destination)
     }
 }
 
