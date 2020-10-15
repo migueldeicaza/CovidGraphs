@@ -57,20 +57,19 @@ struct StatDisplay: View {
 }
 
 struct SummaryLocationView: View {
-    @Binding var stat: Stats
+    @Binding var loc: UpdatableStat
     var body: some View {
         ZStack {
-            //Color ("BackgroundColor")
             HStack {
                 VStack {
                     HStack {
-                        Text(stat.caption)
+                        Text(loc.stat?.caption ?? loc.code)
                             .font (.title2)
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
                         Spacer ()
                     }
-                    if let sub = stat.subCaption {
+                    if let sub = loc.stat?.subCaption {
                         HStack {
                             Text (sub)
                                 .font (.title3)
@@ -81,10 +80,16 @@ struct SummaryLocationView: View {
                         }
                     }
                     Spacer ()
-                    StatDisplay(stat: $stat)
-                    
+                    if let stat = loc.stat {
+                        StatDisplay(stat: .constant (stat))
+                    } else {
+                        ZStack {
+                            StatDisplay (stat: .constant (emptyStat)).redacted(reason: .placeholder)
+                            ProgressView ()
+                        }
+                    }
                 }
-                Chart(data: convertStats (stat.casesDelta, count: 40))
+                Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: 40))
                     .chartStyle(
                         LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
 
@@ -108,45 +113,51 @@ class TapTracker: ObservableObject {
 
 
 struct ContentView: View {
-    @State var locations: [Stats]
+    @ObservedObject var locations: UpdatableLocations
     @State private var editMode = EditMode.inactive
     @State var showingDetail = false
     var tapTracker = TapTracker ()
-
+    
+    public init (locations: [UpdatableStat])
+    {
+        self.locations = UpdatableLocations (statArray: locations)
+    }
+    
     var body: some View {
             NavigationView {
                 ZStack {
                     VStack {
                         List {
-                            ForEach(locations, id: \.self) { loc in
-                        
-                                SummaryLocationView (stat: .constant (loc))
+                            ForEach(locations.stats, id: \.self) { loc in
+                                SummaryLocationView (loc: .constant (loc))
                                     .onTapGesture {
-                                        tapTracker.stat = loc
-                                        showingDetail = true
+                                        if let s = loc.stat {
+                                            tapTracker.stat = s
+                                            showingDetail = true
+                                        }
                                     }
                             }
                             .onDelete(perform: onDelete)
                             .onMove(perform: onMove)
+
                         }.listStyle(InsetListStyle())
-                        .navigationBarItems(leading: HeaderView (), trailing: editAddButton)
+                        .navigationBarItems(leading: HeaderView (), trailing: EditButton ())
                         .environment(\.editMode, $editMode)
                         Spacer ()
                     }
+                    VStack {
+                        Spacer ()
+                        HStack {
+                            Spacer ()
+                            Button(action: onAdd) { Image(systemName: "plus") }
+                                .padding ()
+                        }
+                    }
                 }
             }.sheet(isPresented: $showingDetail) {
+                
                 PresentLocationAsSheet (stat: tapTracker.stat!, showingDetail: $showingDetail)
             }
-
-    }
-    
-    var editAddButton: some View {
-        HStack {
-            if editMode == .active {
-                Button(action: onAdd) { Image(systemName: "plus") }
-            }
-            EditButton ()
-        }
     }
     
     func onAdd () {
@@ -154,11 +165,11 @@ struct ContentView: View {
     }
     
     func onDelete(offsets: IndexSet) {
-        locations.remove(atOffsets: offsets)
+        locations.stats.remove(atOffsets: offsets)
     }
 
     func onMove(source: IndexSet, destination: Int) {
-        locations.move(fromOffsets: source, toOffset: destination)
+        locations.stats.move(fromOffsets: source, toOffset: destination)
     }
 }
 
@@ -193,10 +204,10 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView(locations: [
-                fetch(code: "Spain"),
-                fetch(code: "Massachusetts"),
-                fetch(code: "46005.0"),
-                fetch (code:"California")
+                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Massachusetts"),
+                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code:"California")
             ])
 //            ContentView(locations: [
 //                fetch(code: "Spain"),

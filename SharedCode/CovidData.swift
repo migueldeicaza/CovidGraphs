@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 let formatVersion = 1
 
 /// Imported from the Json file
-public struct TrackedLocation: Codable {
+public struct TrackedLocation: Codable, Equatable, Hashable {
     public var title: String!
     public var admin: String!
     public var proviceState: String!
@@ -78,11 +79,17 @@ func makeDecoder () -> JSONDecoder {
     return d
 }
 
-public class UpdatableStats: ObservableObject {
-    @Published var stat: Stats? = nil
-    var code: String
+///
+/// An observable `Stats` object that can start as nil (no data available), and can be updated over time (when we load from the
+/// cache, or fetch new data from the network)
+///
+public class UpdatableStat: ObservableObject, Hashable, Equatable {
+    /// This is the property that gets updated with new content
+    @Published public var stat: Stats? = nil
+    public var code: String
     var tl: TrackedLocation!
-    
+
+    /// Creates an UpdatableStat with a `code` that reprensents one of the known locations that we have statistics for
     public init (code: String)
     {
         self.code = code
@@ -90,6 +97,18 @@ public class UpdatableStats: ObservableObject {
         load ()
     }
     
+    // This hash function set the uniqueness based on the address
+    public func hash(into: inout Hasher)
+    {
+        into.combine(ObjectIdentifier(self).hashValue)
+    }
+    
+    public static func == (lhs: UpdatableStat, rhs: UpdatableStat) -> Bool {
+        return lhs.stat == rhs.stat &&
+            lhs.code == rhs.code &&
+            lhs.tl == rhs.tl
+    }
+
     func load (){
         let url = URL(string: "https://tirania.org/covid-data/\(code)")!
         var request = URLRequest(url: url)
@@ -107,13 +126,36 @@ public class UpdatableStats: ObservableObject {
             }
             let decoder = makeDecoder()
             if let isnap = try? decoder.decode(IndividualSnapshot.self, from: content) {
+                // Put a sleep here to simulate slow network responses
+                //sleep(4)
                 DispatchQueue.main.async {
+                    
                     self.stat = makeStat(trackedLocation: self.tl, snapshot: isnap.snapshot, date: isnap.time)
                     print ("Data loaded")
                 }
             }
         }
         task.resume()
+    }
+}
+
+/// An array of UpdatableStat objects that can be observed for changes
+public class UpdatableLocations: ObservableObject {
+    @Published
+    public var stats: [UpdatableStat]
+    var cancellables = [AnyCancellable]()
+
+    public init (statArray: [UpdatableStat])
+    {
+        self.stats = statArray
+        
+        self.stats.forEach({
+            let c = $0.objectWillChange.sink(receiveValue: { self.objectWillChange.send() })
+            
+            // Important: You have to keep the returned value allocated,
+            // otherwise the sink subscription gets cancelled
+            self.cancellables.append(c)
+        })
     }
 }
 
@@ -159,10 +201,10 @@ public var globalData: GlobalData = {
     
 var sd: SnapshotData!
 
-var emptyStat = Stats(updateTime: Date(), caption: "Taxachussets", subCaption: nil,
-                      totalCases: 1234, deltaCases: +11,
+public var emptyStat = Stats(updateTime: Date(), caption: "", subCaption: nil,
+                      totalCases: 0, deltaCases: 0,
                       cases: [], casesDelta: [],
-                      totalDeaths: 897, deltaDeaths: +2,
+                      totalDeaths: 0, deltaDeaths: 0,
                       deaths: [], deathsDelta: [])
 
 func makeDelta (_ v: [Int]) -> [Int]

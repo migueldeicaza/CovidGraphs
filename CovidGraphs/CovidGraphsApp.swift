@@ -13,12 +13,12 @@ struct CovidGraphsApp: App {
     @AppStorage ("locations")
     var locations: String = "Massachusetts,California,Spain"
     
-    func makeLocations (input: String) -> [Stats]
+    func makeLocations (input: String) -> [UpdatableStat]
     {
-        var res: [Stats] = []
+        var res: [UpdatableStat] = []
         
         for x in input.split(separator: ",") {
-            res.append (fetch (code: String (x)))
+            res.append (UpdatableStat (code: String (x)))
         }
         return res
     }

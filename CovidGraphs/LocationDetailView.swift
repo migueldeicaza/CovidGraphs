@@ -10,6 +10,7 @@ import SharedCode
 import Charts
 import Shapes
 import MapKit
+import CoreLocation
 
 struct MainTitle: View {
     @Binding var stat: Stats
@@ -57,7 +58,7 @@ struct LocationDetailSummaryView: View {
                     .foregroundColor(.secondary)
             }
             Divider ()
-            VStack {
+            VStack (alignment: .leading) {
                 HStack(spacing: 8.0) {
                     Text ("\(fmtDigit (stat.totalDeaths))")
                         .bold ()
@@ -101,6 +102,7 @@ struct LabeledChart: View {
     func getValueAt (_ n: Int) -> Int
     {
         let (min, max) = getBounds (data, count: days)
+        print ("\(min) and \(max)")
         let ss = (max-min)/slots
         
         return min + n * ss
@@ -109,7 +111,7 @@ struct LabeledChart: View {
     func fmtDate (_ n: Int) -> String
     {
         let d = days == -1 ? data.count : days
-        guard let date = Calendar.current.date(byAdding: .day, value: -(n*(days/slots)), to: Date()) else {
+        guard let date = Calendar.current.date(byAdding: .day, value: -(n*(d/slots)), to: Date()) else {
             return ""
         }
         switch d {
@@ -153,8 +155,10 @@ struct LabeledChart: View {
                 AxisLabels(.vertical, data: 0...3, id: \.self) { v in
                                  Text("\(getValueAt(3-v))")
                                     .font(.footnote).bold ()
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.3)
                                  }
-                                 .frame(width: 20)
+                                 .frame(width: 30)
                 
             }
             AxisLabels(.horizontal, data: 0...3, id: \.self) { v in
@@ -171,7 +175,7 @@ struct LocationDetailView: View {
     @State var stat: Stats
     @State var days = 120
     @State var coordinateRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 44.41, longitude: -98.27),
+        center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
        span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2))
     
     var body: some View {
@@ -192,11 +196,27 @@ struct LocationDetailView: View {
                     .frame (minHeight: 200)
             }
         }.onAppear {
+            let lat = Double (stat.lat ?? "44.414") ?? 0
+            let long = Double (stat.long ?? "-98.27") ?? 0
 
+            // Start out hoping to cover the area
             coordinateRegion = MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: Double (stat.lat ?? "44.414") ?? 0,
-                                               longitude: Double (stat.long ?? "-98.27") ?? 0),
-                span: MKCoordinateSpan(latitudeDelta: 0.2, longitudeDelta: 0.2))
+                center: CLLocationCoordinate2D(latitude: lat,
+                                               longitude: long),
+                span: MKCoordinateSpan(latitudeDelta: 2, longitudeDelta: 2))
+            
+            // Now zoom in
+            let geocoder = CLGeocoder ()
+            let address = stat.caption + (stat.subCaption == nil ? "" : (", " + stat.subCaption!))
+            
+            geocoder.geocodeAddressString(address) { place, err in
+                guard err == nil else { return }
+                guard let region = place?.first?.region as? CLCircularRegion else { return }
+                
+                coordinateRegion = MKCoordinateRegion (
+                    center: coordinateRegion.center,
+                    span: MKCoordinateSpan (latitudeDelta: region.radius/70000, longitudeDelta: region.radius/70000))
+            }
         }
     }
 }
@@ -232,7 +252,7 @@ struct LocationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             //Text ("hi")
-            LocationDetailView(stat: fetch(code: "46005.0"))
+            LocationDetailView(stat: fetch(code: "Massachusetts"))
 //            LocationDetailView(stat: fetch(code: "Massachusetts"))
 //                .environment(\.colorScheme, .dark)
 //            LocationDetailView(stat: fetch(code: "46005.0"))
