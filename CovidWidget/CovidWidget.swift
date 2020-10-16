@@ -8,12 +8,12 @@
 import WidgetKit
 import SwiftUI
 import Intents
-import SharedCode
 import Charts
 import Shapes
+import Combine
 
 struct LocationView: View {
-    @Binding var stat: Stats
+    var stat: Stats
     var body: some View {
         ZStack {
             //Color (.blue)
@@ -75,55 +75,57 @@ struct CovidChartView: View {
 //   otherwise Country == specified, provinceRegion is the subregioin
 
 struct GeographyStatView: View {
-    @State var stat: Stats
+    @State var updatableStat: UpdatableStat
     @Environment(\.widgetFamily) var family
 
     var body: some View {
         ZStack {
             Color ("BackgroundColor")
             VStack (alignment: .leading, spacing: 2.0){
-                
-                LocationView(stat: $stat)
-                switch family {
-                case .systemSmall:
-                    CovidChartView (stat: stat.casesDelta)
-                default:
-                    HStack (spacing: 20){
+                if let stat = updatableStat.stat {
+                    LocationView(stat: stat)
+                    switch family {
+                    case .systemSmall:
                         CovidChartView (stat: stat.casesDelta)
-                        CovidChartView (stat: stat.deathsDelta)
+                    default:
+                        HStack (spacing: 20){
+                            CovidChartView (stat: stat.casesDelta)
+                            CovidChartView (stat: stat.deathsDelta)
+                        }
                     }
-                }
-                //
-                Spacer ().frame(minHeight: 0)
-                VStack  {
-                    HStack {
-                        Text (fmtDelta (stat.deltaCases, compress: family == .systemSmall))
-                            .font (.title3)
-                            .lineLimit(1)
-                            
-
-                            Spacer (minLength: 12)
-                            Text (fmtDelta (stat.deltaDeaths, compress: family == .systemSmall))
+                    //
+                    Spacer ().frame(minHeight: 0)
+                    VStack  {
+                        HStack {
+                            Text (fmtDelta (stat.deltaCases, compress: family == .systemSmall))
                                 .font (.title3)
                                 .lineLimit(1)
                                 
 
-                    }.minimumScaleFactor(0.7)
-                    HStack {
-                        Text (family == .systemSmall ? fmtLarge (stat.totalCases) : fmtDigit (stat.totalCases))
-                            .font(.footnote)
-                            .foregroundColor(Color ("SubTextColor"))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8  )
-                        Spacer (minLength: 12)
-                        Text (fmtLarge (stat.totalDeaths))
-                            .font(.footnote)
-                            .foregroundColor(Color ("SubTextColor"))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8  )
-                    }
-                }
+                                Spacer (minLength: 12)
+                                Text (fmtDelta (stat.deltaDeaths, compress: family == .systemSmall))
+                                    .font (.title3)
+                                    .lineLimit(1)
+                                    
 
+                        }.minimumScaleFactor(0.7)
+                        HStack {
+                            Text (family == .systemSmall ? fmtLarge (stat.totalCases) : fmtDigit (stat.totalCases))
+                                .font(.footnote)
+                                .foregroundColor(Color ("SubTextColor"))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8  )
+                            Spacer (minLength: 12)
+                            Text (fmtLarge (stat.totalDeaths))
+                                .font(.footnote)
+                                .foregroundColor(Color ("SubTextColor"))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8  )
+                        }
+                    }
+                } else {
+                    Text ("Loading")
+                }
             }
             .foregroundColor(Color ("MainTextColor"))
             .padding()
@@ -162,13 +164,26 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationIntent
 }
 
+var widgets: [UpdatableStat] = []
+var cancel: [AnyCancellable] = []
+
 struct CovidWidgetEntryView : View {
     var entry: Provider.Entry
-
+    
+    func startStat () -> UpdatableStat
+    {
+        let s = UpdatableStat(code: "Massachusetts")
+        cancel.append (s.objectWillChange.sink(receiveValue: {
+            WidgetCenter.shared.reloadAllTimelines()
+        }))
+        widgets.append(s)
+        return s
+    }
+    
     var body: some View {
         //GeographyStatView(stat: fetch(code: "Massachusetts"))
         //GeographyStatView(stat: fetch(code: "13209.0"))
-        GeographyStatView(stat: fetch(code: "Spain"))
+        GeographyStatView(updatableStat: startStat ())
     }
 }
 

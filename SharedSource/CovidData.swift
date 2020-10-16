@@ -17,6 +17,30 @@ public struct TrackedLocation: Codable, Equatable, Hashable {
     public var proviceState: String!
     public var countryRegion: String!
     public var lat, long: String!
+    
+    public func getCaptions () -> (caption: String, subcaption: String?)
+    {
+        var caption: String
+        var subcaption: String? = nil
+        
+        if countryRegion == "US" {
+            if admin == nil {
+                caption = proviceState
+            } else {
+                caption = admin
+                subcaption = proviceState
+            }
+        } else {
+            if proviceState == "" {
+                caption = countryRegion
+            } else {
+                caption = proviceState
+                subcaption = countryRegion
+            }
+        }
+        return (caption, subcaption)
+    }
+
 }
 
 // Imported from the JSON file, tends to have the last N samples (20 or so)
@@ -73,12 +97,20 @@ public struct Stats: Hashable {
     public var lat, long: String!
 }
 
+/// Returns a configured decoder for our data files
 func makeDecoder () -> JSONDecoder {
     let d = JSONDecoder()
     d.dateDecodingStrategy = .iso8601
     return d
 }
 
+/// Returns the URL for the specific region code
+func cacheFileForRegion (code: String) -> URL? {
+    if let cacheDir = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
+        return cacheDir.appendingPathComponent(code)
+    }
+    return nil
+}
 ///
 /// An observable `Stats` object that can start as nil (no data available), and can be updated over time (when we load from the
 /// cache, or fetch new data from the network)
@@ -94,7 +126,15 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
     {
         self.code = code
         self.tl = globalData.globals [code]
-        load ()
+        
+        if let existing = IndividualSnapshot.tryLoadCache(name: code) {
+            // If it is fresh enough, no need to download
+            if existing.time + TimeInterval(24*60*60) > Date () {
+                self.stat = makeStat(trackedLocation: self.tl, snapshot: existing.snapshot, date: existing.time)
+                return
+            }
+        }
+        fetchNewSnapshot ()
     }
     
     // This hash function set the uniqueness based on the address
@@ -109,12 +149,13 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
             lhs.tl == rhs.tl
     }
 
-    func load (){
+    func fetchNewSnapshot (){
         let url = URL(string: "https://tirania.org/covid-data/\(code)")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
         let task = URLSession.shared.dataTask(with: request) {(data, response, error) in
+            //print ("Response: \(response)")
             guard error == nil else {
                 print ("error: \(error!)")
                 return
@@ -123,6 +164,10 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
             guard let content = data else {
                 print("No data")
                 return
+            }
+            if let cacheFile = cacheFileForRegion(code: self.code) {
+                //print ("Saving to \(cacheFile)")
+                try! content.write(to: cacheFile)
             }
             let decoder = makeDecoder()
             if let isnap = try? decoder.decode(IndividualSnapshot.self, from: content) {
@@ -163,9 +208,8 @@ extension IndividualSnapshot {
  
     static public func tryLoadCache (name: String) -> IndividualSnapshot?
     {
-        if let cacheDir = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true) {
-            let file = cacheDir.appendingPathComponent(name)
-            
+        if let file = cacheFileForRegion(code: name) {
+            //print ("Loading from \(file)")
             if let data = try? Data (contentsOf: file) {
                 let decoder = makeDecoder()
                 if let snapshot = try? decoder.decode(IndividualSnapshot.self, from: data) {
@@ -198,6 +242,32 @@ public var globalData: GlobalData = {
     }
     abort ()
 }()
+
+var _sortedData: [String] = []
+
+func sortBySubcaption (first: TrackedLocation, second: TrackedLocation) -> Bool {
+    return ("\(first.countryRegion ?? ""), \(first.proviceState ?? ""), \(first.admin ?? "")") <
+    ("\(second.countryRegion ?? ""), \(second.proviceState ?? ""), \(second.admin ?? "")")
+}
+
+public var prettifiedLocations: [String] = {
+    if _sortedData.count != 0 {
+        return _sortedData
+    }
+    let sorted = globalData.globals.values.sorted(by: sortBySubcaption(first:second:))
+    for v in sorted {
+        if (v.admin ?? "") == "" {
+            if (v.proviceState ?? "") == "" {
+                _sortedData.append(v.countryRegion ?? "")
+            } else {
+                _sortedData.append("\(v.proviceState ?? ""), \(v.countryRegion ?? "")")
+            }
+        } else {
+            _sortedData.append("\(v.admin ?? ""), \(v.proviceState ?? ""), \(v.countryRegion ?? "")")
+        }
+    }
+    return _sortedData
+}()
     
 var sd: SnapshotData!
 
@@ -227,25 +297,9 @@ public func makeStat (trackedLocation: TrackedLocation, snapshot: Snapshot, date
     let last2Cases = Array(snapshot.lastConfirmed.suffix(2))
     let totalCases = last2Cases [1]
     let deltaCases = last2Cases[1]-last2Cases[0]
+
+    let (caption, subcaption) = trackedLocation.getCaptions ()
     
-    var caption: String
-    var subcaption: String?
-    
-    if trackedLocation.countryRegion == "US" {
-        if trackedLocation.admin == nil {
-            caption = trackedLocation.proviceState
-        } else {
-            caption = trackedLocation.admin
-            subcaption = trackedLocation.proviceState
-        }
-    } else {
-        if trackedLocation.proviceState == "" {
-            caption = trackedLocation.countryRegion
-        } else {
-            caption = trackedLocation.proviceState
-            subcaption = trackedLocation.countryRegion
-        }
-    }
     return Stats (updateTime: date,
                   caption: caption,
                   subCaption: subcaption,

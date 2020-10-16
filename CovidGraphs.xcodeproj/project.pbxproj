@@ -11,6 +11,9 @@
 		491609D025335F9900ECDFC1 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609CE25335F9900ECDFC1 /* Utilities.swift */; };
 		491609D62533600900ECDFC1 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 491609D52533600900ECDFC1 /* Charts */; };
 		491609DC2533B16600ECDFC1 /* LocationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609DB2533B16600ECDFC1 /* LocationDetailView.swift */; };
+		4932270325388A87005E84A6 /* CovidData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CF18252EB0B200C78B5D /* CovidData.swift */; };
+		4932270425388A87005E84A6 /* CovidData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CF18252EB0B200C78B5D /* CovidData.swift */; };
+		493227132538C8F0005E84A6 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493227122538C8F0005E84A6 /* SearchView.swift */; };
 		4985CEC7252BD3A900C78B5D /* CovidGraphsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEC6252BD3A900C78B5D /* CovidGraphsApp.swift */; };
 		4985CEC9252BD3A900C78B5D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEC8252BD3A900C78B5D /* ContentView.swift */; };
 		4985CECB252BD3AA00C78B5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4985CECA252BD3AA00C78B5D /* Assets.xcassets */; };
@@ -22,13 +25,7 @@
 		4985CEE7252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEE3252BD3C400C78B5D /* CovidWidget.intentdefinition */; };
 		4985CEE8252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 4985CEE3252BD3C400C78B5D /* CovidWidget.intentdefinition */; };
 		4985CEEB252BD3C500C78B5D /* CovidWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4985CEDA252BD3C400C78B5D /* CovidWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		4985CF00252EB09800C78B5D /* SharedCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; };
 		4985CF07252EB09800C78B5D /* SharedCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CF06252EB09800C78B5D /* SharedCodeTests.swift */; };
-		4985CF09252EB09800C78B5D /* SharedCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 4985CEF9252EB09800C78B5D /* SharedCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4985CF0C252EB09800C78B5D /* SharedCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; };
-		4985CF0D252EB09800C78B5D /* SharedCode.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4985CF1D252EB0E100C78B5D /* SharedCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; };
-		4985CF1E252EB0E100C78B5D /* SharedCode.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4985CEF7252EB09800C78B5D /* SharedCode.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4985CF7F2530ADA100C78B5D /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 4985CF7E2530ADA100C78B5D /* Charts */; };
 		498E963425315C1A005FDBC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 498E963325315C1A005FDBC4 /* Assets.xcassets */; };
 		498E963B25315C1A005FDBC4 /* WatchApp Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 498E963A25315C1A005FDBC4 /* WatchApp Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -40,7 +37,6 @@
 		498E964A25315C1A005FDBC4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 498E964925315C1A005FDBC4 /* Assets.xcassets */; };
 		498E964D25315C1A005FDBC4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 498E964C25315C1A005FDBC4 /* Preview Assets.xcassets */; };
 		498E965225315C1A005FDBC4 /* WatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 498E963125315C19005FDBC4 /* WatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		498E968B25321DAE005FDBC4 /* CovidData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4985CF18252EB0B200C78B5D /* CovidData.swift */; };
 		49FAE0D22534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
 		49FAE0D32534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
 		49FAE0D42534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
@@ -55,33 +51,12 @@
 			remoteGlobalIDString = 4985CED9252BD3C400C78B5D;
 			remoteInfo = CovidWidgetExtension;
 		};
-		4985CF01252EB09800C78B5D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4985CEBB252BD3A900C78B5D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4985CEF6252EB09800C78B5D;
-			remoteInfo = SharedCode;
-		};
 		4985CF03252EB09800C78B5D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4985CEBB252BD3A900C78B5D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 4985CEC2252BD3A900C78B5D;
 			remoteInfo = CovidGraphs;
-		};
-		4985CF0A252EB09800C78B5D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4985CEBB252BD3A900C78B5D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4985CEF6252EB09800C78B5D;
-			remoteInfo = SharedCode;
-		};
-		4985CF1F252EB0E100C78B5D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4985CEBB252BD3A900C78B5D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4985CEF6252EB09800C78B5D;
-			remoteInfo = SharedCode;
 		};
 		498E963C25315C1A005FDBC4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -117,7 +92,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4985CF0D252EB09800C78B5D /* SharedCode.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,7 +102,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4985CF1E252EB0E100C78B5D /* SharedCode.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +133,7 @@
 /* Begin PBXFileReference section */
 		491609CE25335F9900ECDFC1 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		491609DB2533B16600ECDFC1 /* LocationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDetailView.swift; sourceTree = "<group>"; };
+		493227122538C8F0005E84A6 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		4985CEC3252BD3A900C78B5D /* CovidGraphs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CovidGraphs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4985CEC6252BD3A900C78B5D /* CovidGraphsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CovidGraphsApp.swift; sourceTree = "<group>"; };
 		4985CEC8252BD3A900C78B5D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -173,9 +147,6 @@
 		4985CEE3252BD3C400C78B5D /* CovidWidget.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = CovidWidget.intentdefinition; sourceTree = "<group>"; };
 		4985CEE4252BD3C500C78B5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4985CEE6252BD3C500C78B5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4985CEF7252EB09800C78B5D /* SharedCode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SharedCode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4985CEF9252EB09800C78B5D /* SharedCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedCode.h; sourceTree = "<group>"; };
-		4985CEFA252EB09800C78B5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4985CEFF252EB09800C78B5D /* SharedCodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SharedCodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4985CF06252EB09800C78B5D /* SharedCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedCodeTests.swift; sourceTree = "<group>"; };
 		4985CF08252EB09800C78B5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -201,7 +172,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4985CF0C252EB09800C78B5D /* SharedCode.framework in Frameworks */,
 				491609D62533600900ECDFC1 /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,16 +181,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4985CEDF252BD3C400C78B5D /* SwiftUI.framework in Frameworks */,
-				4985CF1D252EB0E100C78B5D /* SharedCode.framework in Frameworks */,
 				4985CEDD252BD3C400C78B5D /* WidgetKit.framework in Frameworks */,
 				4985CF7F2530ADA100C78B5D /* Charts in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4985CEF4252EB09800C78B5D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,7 +190,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4985CF00252EB09800C78B5D /* SharedCode.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,7 +209,6 @@
 				498E96DA25327039005FDBC4 /* SharedSource */,
 				4985CEC5252BD3A900C78B5D /* CovidGraphs */,
 				4985CEE0252BD3C400C78B5D /* CovidWidget */,
-				4985CEF8252EB09800C78B5D /* SharedCode */,
 				4985CF05252EB09800C78B5D /* SharedCodeTests */,
 				498E963225315C19005FDBC4 /* WatchApp */,
 				498E963E25315C1A005FDBC4 /* WatchApp Extension */,
@@ -262,7 +222,6 @@
 			children = (
 				4985CEC3252BD3A900C78B5D /* CovidGraphs.app */,
 				4985CEDA252BD3C400C78B5D /* CovidWidgetExtension.appex */,
-				4985CEF7252EB09800C78B5D /* SharedCode.framework */,
 				4985CEFF252EB09800C78B5D /* SharedCodeTests.xctest */,
 				498E963125315C19005FDBC4 /* WatchApp.app */,
 				498E963A25315C1A005FDBC4 /* WatchApp Extension.appex */,
@@ -279,6 +238,7 @@
 				4985CECC252BD3AA00C78B5D /* Preview Content */,
 				4985CEC8252BD3A900C78B5D /* ContentView.swift */,
 				491609DB2533B16600ECDFC1 /* LocationDetailView.swift */,
+				493227122538C8F0005E84A6 /* SearchView.swift */,
 			);
 			path = CovidGraphs;
 			sourceTree = "<group>";
@@ -309,16 +269,6 @@
 				4985CEE6252BD3C500C78B5D /* Info.plist */,
 			);
 			path = CovidWidget;
-			sourceTree = "<group>";
-		};
-		4985CEF8252EB09800C78B5D /* SharedCode */ = {
-			isa = PBXGroup;
-			children = (
-				4985CEF9252EB09800C78B5D /* SharedCode.h */,
-				4985CEFA252EB09800C78B5D /* Info.plist */,
-				4985CF18252EB0B200C78B5D /* CovidData.swift */,
-			);
-			path = SharedCode;
 			sourceTree = "<group>";
 		};
 		4985CF05252EB09800C78B5D /* SharedCodeTests */ = {
@@ -368,22 +318,12 @@
 			children = (
 				49FAE0D12534D605001F95E3 /* global */,
 				491609CE25335F9900ECDFC1 /* Utilities.swift */,
+				4985CF18252EB0B200C78B5D /* CovidData.swift */,
 			);
 			path = SharedSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
-
-/* Begin PBXHeadersBuildPhase section */
-		4985CEF2252EB09800C78B5D /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4985CF09252EB09800C78B5D /* SharedCode.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		4985CEC2252BD3A900C78B5D /* CovidGraphs */ = {
@@ -401,7 +341,6 @@
 			);
 			dependencies = (
 				4985CEEA252BD3C500C78B5D /* PBXTargetDependency */,
-				4985CF0B252EB09800C78B5D /* PBXTargetDependency */,
 				498E965125315C1A005FDBC4 /* PBXTargetDependency */,
 			);
 			name = CovidGraphs;
@@ -424,7 +363,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4985CF20252EB0E100C78B5D /* PBXTargetDependency */,
 			);
 			name = CovidWidgetExtension;
 			packageProductDependencies = (
@@ -433,24 +371,6 @@
 			productName = CovidWidgetExtension;
 			productReference = 4985CEDA252BD3C400C78B5D /* CovidWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-		4985CEF6252EB09800C78B5D /* SharedCode */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4985CF0E252EB09800C78B5D /* Build configuration list for PBXNativeTarget "SharedCode" */;
-			buildPhases = (
-				4985CEF2252EB09800C78B5D /* Headers */,
-				4985CEF3252EB09800C78B5D /* Sources */,
-				4985CEF4252EB09800C78B5D /* Frameworks */,
-				4985CEF5252EB09800C78B5D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SharedCode;
-			productName = SharedCode;
-			productReference = 4985CEF7252EB09800C78B5D /* SharedCode.framework */;
-			productType = "com.apple.product-type.framework";
 		};
 		4985CEFE252EB09800C78B5D /* SharedCodeTests */ = {
 			isa = PBXNativeTarget;
@@ -463,7 +383,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4985CF02252EB09800C78B5D /* PBXTargetDependency */,
 				4985CF04252EB09800C78B5D /* PBXTargetDependency */,
 			);
 			name = SharedCodeTests;
@@ -522,10 +441,6 @@
 					4985CED9252BD3C400C78B5D = {
 						CreatedOnToolsVersion = 12.0.1;
 					};
-					4985CEF6252EB09800C78B5D = {
-						CreatedOnToolsVersion = 12.0.1;
-						LastSwiftMigration = 1200;
-					};
 					4985CEFE252EB09800C78B5D = {
 						CreatedOnToolsVersion = 12.0.1;
 						TestTargetID = 4985CEC2252BD3A900C78B5D;
@@ -556,7 +471,6 @@
 			targets = (
 				4985CEC2252BD3A900C78B5D /* CovidGraphs */,
 				4985CED9252BD3C400C78B5D /* CovidWidgetExtension */,
-				4985CEF6252EB09800C78B5D /* SharedCode */,
 				4985CEFE252EB09800C78B5D /* SharedCodeTests */,
 				498E963025315C19005FDBC4 /* WatchApp */,
 				498E963925315C1A005FDBC4 /* WatchApp Extension */,
@@ -581,13 +495,6 @@
 			files = (
 				4985CEE5252BD3C500C78B5D /* Assets.xcassets in Resources */,
 				49FAE0D32534D605001F95E3 /* global in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4985CEF5252EB09800C78B5D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,6 +534,8 @@
 				4985CEC9252BD3A900C78B5D /* ContentView.swift in Sources */,
 				4985CEC7252BD3A900C78B5D /* CovidGraphsApp.swift in Sources */,
 				491609DC2533B16600ECDFC1 /* LocationDetailView.swift in Sources */,
+				493227132538C8F0005E84A6 /* SearchView.swift in Sources */,
+				4932270325388A87005E84A6 /* CovidData.swift in Sources */,
 				491609CF25335F9900ECDFC1 /* Utilities.swift in Sources */,
 				4985CEE8252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,
 			);
@@ -637,16 +546,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				491609D025335F9900ECDFC1 /* Utilities.swift in Sources */,
+				4932270425388A87005E84A6 /* CovidData.swift in Sources */,
 				4985CEE7252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,
 				4985CEE2252BD3C400C78B5D /* CovidWidget.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4985CEF3252EB09800C78B5D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				498E968B25321DAE005FDBC4 /* CovidData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -678,25 +580,10 @@
 			target = 4985CED9252BD3C400C78B5D /* CovidWidgetExtension */;
 			targetProxy = 4985CEE9252BD3C500C78B5D /* PBXContainerItemProxy */;
 		};
-		4985CF02252EB09800C78B5D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4985CEF6252EB09800C78B5D /* SharedCode */;
-			targetProxy = 4985CF01252EB09800C78B5D /* PBXContainerItemProxy */;
-		};
 		4985CF04252EB09800C78B5D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4985CEC2252BD3A900C78B5D /* CovidGraphs */;
 			targetProxy = 4985CF03252EB09800C78B5D /* PBXContainerItemProxy */;
-		};
-		4985CF0B252EB09800C78B5D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4985CEF6252EB09800C78B5D /* SharedCode */;
-			targetProxy = 4985CF0A252EB09800C78B5D /* PBXContainerItemProxy */;
-		};
-		4985CF20252EB0E100C78B5D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4985CEF6252EB09800C78B5D /* SharedCode */;
-			targetProxy = 4985CF1F252EB0E100C78B5D /* PBXContainerItemProxy */;
 		};
 		498E963D25315C1A005FDBC4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -915,67 +802,9 @@
 			};
 			name = Release;
 		};
-		4985CF0F252EB09800C78B5D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = PJQC57N853;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SharedCode/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.tirania.SharedCode;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		4985CF10252EB09800C78B5D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = PJQC57N853;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = SharedCode/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.tirania.SharedCode;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
 		4985CF13252EB09800C78B5D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PJQC57N853;
 				INFOPLIST_FILE = SharedCodeTests/Info.plist;
@@ -995,7 +824,6 @@
 		4985CF14252EB09800C78B5D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PJQC57N853;
 				INFOPLIST_FILE = SharedCodeTests/Info.plist;
@@ -1126,15 +954,6 @@
 			buildConfigurations = (
 				4985CEED252BD3C500C78B5D /* Debug */,
 				4985CEEE252BD3C500C78B5D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4985CF0E252EB09800C78B5D /* Build configuration list for PBXNativeTarget "SharedCode" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4985CF0F252EB09800C78B5D /* Debug */,
-				4985CF10252EB09800C78B5D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

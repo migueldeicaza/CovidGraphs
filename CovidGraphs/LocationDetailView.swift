@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SharedCode
 import Charts
 import Shapes
 import MapKit
@@ -102,7 +101,6 @@ struct LabeledChart: View {
     func getValueAt (_ n: Int) -> Int
     {
         let (min, max) = getBounds (data, count: days)
-        print ("\(min) and \(max)")
         let ss = (max-min)/slots
         
         return min + n * ss

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SharedCode
 
 @main
 struct CovidGraphsApp: App {
@@ -22,6 +21,7 @@ struct CovidGraphsApp: App {
         }
         return res
     }
+    
     var body: some Scene {
         WindowGroup {
             ContentView(locations: makeLocations(input: locations))

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SharedCode
 import Charts
 import Shapes
 
@@ -92,30 +91,36 @@ struct SummaryLocationView: View {
                 Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: 40))
                     .chartStyle(
                         LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
+                    .shadow(color: Color.black.opacity(0.3),
+                            radius: 2,
+                            x: 1,
+                            y: 1)
 
                     .background(
                         GridPattern(horizontalLines: 8, verticalLines: 12)
                            .inset(by: 1)
                             .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
                     .padding ([.leading])
+                
 
-            }.padding(8)
+            }.padding([.bottom, .top], 8)
         }
         .frame(minHeight: 60, maxHeight: 100)
-        .padding([.leading, .trailing], 8)
-        .padding ([.bottom], 6)
+        //.padding([.leading, .trailing], 8)
+        .padding ([.bottom, .top], 6)
     }
 }
 
 class TapTracker: ObservableObject {
     var stat: Stats?
+    var showSearch = false
 }
 
 
 struct ContentView: View {
     @ObservedObject var locations: UpdatableLocations
     @State private var editMode = EditMode.inactive
-    @State var showingDetail = false
+    @State var showingSheet = false
     var tapTracker = TapTracker ()
     
     public init (locations: [UpdatableStat])
@@ -124,44 +129,67 @@ struct ContentView: View {
     }
     
     var body: some View {
-            NavigationView {
-                ZStack {
-                    VStack {
-                        List {
-                            ForEach(locations.stats, id: \.self) { loc in
-                                SummaryLocationView (loc: .constant (loc))
-                                    .onTapGesture {
-                                        if let s = loc.stat {
-                                            tapTracker.stat = s
-                                            showingDetail = true
-                                        }
+        NavigationView {
+            ZStack {
+                VStack (alignment: .leading) {
+                    
+                    List {
+                        ForEach(locations.stats, id: \.self) { loc in
+                            SummaryLocationView (loc: .constant (loc))
+                                .onTapGesture {
+                                    if let s = loc.stat {
+                                        tapTracker.stat = s
+                                        showDetail ()
                                     }
-                            }
-                            .onDelete(perform: onDelete)
-                            .onMove(perform: onMove)
-
-                        }.listStyle(InsetListStyle())
-                        .navigationBarItems(leading: HeaderView (), trailing: EditButton ())
-                        .environment(\.editMode, $editMode)
-                        Spacer ()
-                    }
-                    VStack {
-                        Spacer ()
-                        HStack {
-                            Spacer ()
-                            Button(action: onAdd) { Image(systemName: "plus") }
-                                .padding ()
+                                }
                         }
+                        .onDelete(perform: onDelete)
+                        .onMove(perform: onMove)
+                        
+                    }.listStyle(PlainListStyle())
+                    .navigationBarItems(leading: HeaderView(), trailing: EditButton ())
+                    .environment(\.editMode, $editMode)
+                    Spacer ()
+                }
+                VStack {
+                    Spacer ()
+                    HStack {
+                        Spacer ()
+                        Button (action: onAdd, label: {
+                            Image (systemName: "plus")
+                                //.font(.system(.title2))
+                                .foregroundColor(.accentColor)
+                                
+                        }).padding (10)
+                        .background(Color.white)
+                        .cornerRadius(38.5)
+                        .padding()
+                        .shadow(color: Color.black.opacity(0.2),
+                                radius: 7,
+                                x: 3,
+                                y: 3)
                     }
                 }
-            }.sheet(isPresented: $showingDetail) {
-                
-                PresentLocationAsSheet (stat: tapTracker.stat!, showingDetail: $showingDetail)
             }
+        }
+        .sheet(isPresented: $showingSheet) {
+            if tapTracker.showSearch {
+                PresentSearchAsSheet (showSearch: $showingSheet)
+            } else {
+                PresentLocationAsSheet (stat: tapTracker.stat!, showingDetail: $showingSheet)
+            }
+        }
+    }
+    
+    func showDetail ()
+    {
+        tapTracker.showSearch = false
+        showingSheet = true
     }
     
     func onAdd () {
-        
+        tapTracker.showSearch = true
+        showingSheet = true
     }
     
     func onDelete(offsets: IndexSet) {
@@ -209,21 +237,21 @@ struct ContentView_Previews: PreviewProvider {
                 UpdatableStat(code: "46005.0"),
                 UpdatableStat(code:"California")
             ])
-//            ContentView(locations: [
-//                fetch(code: "Spain"),
-//                fetch(code: "Massachusetts"),
-//                fetch(code: "46005.0"),
-//                fetch (code:"California")
-//            ])
-//            .environment(\.colorScheme, .dark)
-//            ContentView(locations: [
-//                fetch(code: "Spain"),
-//                fetch(code: "Massachusetts"),
-//                fetch(code: "46005.0"),
-//                fetch (code:"California")
-//            ])
-//            .environment(\.colorScheme, .dark)
-//            .environment(\.sizeCategory, .extraExtraExtraLarge)
+            ContentView(locations: [
+                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Massachusetts"),
+                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code:"California")
+            ])
+            .environment(\.colorScheme, .dark)
+            ContentView(locations: [
+                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Massachusetts"),
+                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code:"California")
+            ])
+            .environment(\.colorScheme, .dark)
+            .environment(\.sizeCategory, .extraExtraExtraLarge)
 
         }
     }
