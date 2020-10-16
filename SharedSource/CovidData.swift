@@ -277,14 +277,15 @@ public var emptyStat = Stats(updateTime: Date(), caption: "", subCaption: nil,
                       totalDeaths: 0, deltaDeaths: 0,
                       deaths: [], deathsDelta: [])
 
-func makeDelta (_ v: [Int]) -> [Int]
+func makeDelta (_ raw: [Int]) -> [Int]
 {
+    let smoothed = raw.smoothed()
     var result: [Int] = []
-    var last = v [0]
+    var last = smoothed [0]
     
-    for i in 1..<v.count {
-        result.append (v[i]-last)
-        last = v [i]
+    for i in 1..<smoothed.count {
+        result.append (smoothed[i]-last)
+        last = smoothed [i]
     }
     return result
 }
