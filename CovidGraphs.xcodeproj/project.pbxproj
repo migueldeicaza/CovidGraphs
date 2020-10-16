@@ -41,6 +41,8 @@
 		49FAE0D32534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
 		49FAE0D42534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
 		49FAE0D52534D605001F95E3 /* global in Resources */ = {isa = PBXBuildFile; fileRef = 49FAE0D12534D605001F95E3 /* global */; };
+		D22072D72539F79D007E1CD6 /* Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22072D62539F79D007E1CD6 /* Smoothing.swift */; };
+		D22072D82539F79D007E1CD6 /* Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22072D62539F79D007E1CD6 /* Smoothing.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -165,6 +167,7 @@
 		498E964E25315C1A005FDBC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		498E964F25315C1A005FDBC4 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		49FAE0D12534D605001F95E3 /* global */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = global; sourceTree = "<group>"; };
+		D22072D62539F79D007E1CD6 /* Smoothing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Smoothing.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -319,6 +322,7 @@
 				49FAE0D12534D605001F95E3 /* global */,
 				491609CE25335F9900ECDFC1 /* Utilities.swift */,
 				4985CF18252EB0B200C78B5D /* CovidData.swift */,
+				D22072D62539F79D007E1CD6 /* Smoothing.swift */,
 			);
 			path = SharedSource;
 			sourceTree = "<group>";
@@ -533,6 +537,7 @@
 			files = (
 				4985CEC9252BD3A900C78B5D /* ContentView.swift in Sources */,
 				4985CEC7252BD3A900C78B5D /* CovidGraphsApp.swift in Sources */,
+				D22072D72539F79D007E1CD6 /* Smoothing.swift in Sources */,
 				491609DC2533B16600ECDFC1 /* LocationDetailView.swift in Sources */,
 				493227132538C8F0005E84A6 /* SearchView.swift in Sources */,
 				4932270325388A87005E84A6 /* CovidData.swift in Sources */,
@@ -548,6 +553,7 @@
 				491609D025335F9900ECDFC1 /* Utilities.swift in Sources */,
 				4932270425388A87005E84A6 /* CovidData.swift in Sources */,
 				4985CEE7252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,
+				D22072D82539F79D007E1CD6 /* Smoothing.swift in Sources */,
 				4985CEE2252BD3C400C78B5D /* CovidWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
