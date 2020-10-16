@@ -49,7 +49,7 @@ extension Array where Element == Double {
                 // Too early in the data to apply smoothing
                 return element
             }
-            return self[(offset - (daysInPeriod - 1))...offset].reduce(0, +)/daysInPeriod
+            return self[(offset - (daysInPeriod - 1))...offset].reduce(0, +)/Double(daysInPeriod)
         }
         
         return smaSmoothed
