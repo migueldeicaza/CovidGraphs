@@ -86,6 +86,8 @@ public struct Stats: Hashable {
     public var cases: [Int]
     /// Array of change of cases per day
     public var casesDelta: [Int]
+    /// Smoothed Array of change of cases per day
+    public var casesDeltaSmooth: [Int]
     /// Total number of deaths in that location
     public var totalDeaths: Int
     /// Total of new deaths in the last day for that location
@@ -94,6 +96,9 @@ public struct Stats: Hashable {
     public var deaths: [Int]
     /// Array of changes in deaths since the beginning
     public var deathsDelta: [Int]
+    
+    /// Smoothed Array of changes in deaths since the beginning
+    public var deathsDeltaSmooth: [Int]
     public var lat, long: String!
 }
 
@@ -128,6 +133,9 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
         self.tl = globalData.globals [code]
         
         if let existing = IndividualSnapshot.tryLoadCache(name: code) {
+            var current = Calendar.current
+            var components = current.dateComponents(in: current.timeZone, from: Date ())
+            
             // If it is fresh enough, no need to download
             if existing.time + TimeInterval(24*60*60) > Date () {
                 self.stat = makeStat(trackedLocation: self.tl, snapshot: existing.snapshot, date: existing.time)
@@ -273,19 +281,18 @@ var sd: SnapshotData!
 
 public var emptyStat = Stats(updateTime: Date(), caption: "", subCaption: nil,
                       totalCases: 0, deltaCases: 0,
-                      cases: [], casesDelta: [],
+                      cases: [], casesDelta: [], casesDeltaSmooth: [],
                       totalDeaths: 0, deltaDeaths: 0,
-                      deaths: [], deathsDelta: [])
+                      deaths: [], deathsDelta: [], deathsDeltaSmooth: [])
 
-func makeDelta (_ raw: [Int]) -> [Int]
+func makeDelta (_ v: [Int]) -> [Int]
 {
-    let smoothed = raw.smoothed()
     var result: [Int] = []
-    var last = smoothed [0]
+    var last = v [0]
     
-    for i in 1..<smoothed.count {
-        result.append (smoothed[i]-last)
-        last = smoothed [i]
+    for i in 1..<v.count {
+        result.append (v[i]-last)
+        last = v [i]
     }
     return result
 }
@@ -308,10 +315,12 @@ public func makeStat (trackedLocation: TrackedLocation, snapshot: Snapshot, date
                   deltaCases: deltaCases,
                   cases: snapshot.lastConfirmed,
                   casesDelta: makeDelta (snapshot.lastConfirmed),
+                  casesDeltaSmooth: makeDelta (snapshot.lastConfirmed.smoothed()),
                   totalDeaths: totalDeaths,
                   deltaDeaths: deltaDeaths,
                   deaths: snapshot.lastDeaths,
                   deathsDelta: makeDelta (snapshot.lastDeaths),
+                  deathsDeltaSmooth: makeDelta(snapshot.lastDeaths.smoothed()),
                   lat: trackedLocation.lat,
                   long: trackedLocation.long)
 }

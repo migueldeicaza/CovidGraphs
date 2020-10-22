@@ -212,7 +212,7 @@ struct HeaderView: View {
     var body: some View {
         VStack {
             HStack {
-                Text ("Covid Statisitics")
+                Text ("Covid Statistics")
                     .font (.title)
                     .bold()
                 Spacer ()

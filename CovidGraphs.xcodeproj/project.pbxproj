@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		490DE02E253A05120009E674 /* AddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490DE02D253A05120009E674 /* AddView.swift */; };
 		491609CF25335F9900ECDFC1 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609CE25335F9900ECDFC1 /* Utilities.swift */; };
 		491609D025335F9900ECDFC1 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491609CE25335F9900ECDFC1 /* Utilities.swift */; };
 		491609D62533600900ECDFC1 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = 491609D52533600900ECDFC1 /* Charts */; };
@@ -133,6 +134,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		490DE02D253A05120009E674 /* AddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddView.swift; sourceTree = "<group>"; };
 		491609CE25335F9900ECDFC1 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		491609DB2533B16600ECDFC1 /* LocationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationDetailView.swift; sourceTree = "<group>"; };
 		493227122538C8F0005E84A6 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				4985CEC8252BD3A900C78B5D /* ContentView.swift */,
 				491609DB2533B16600ECDFC1 /* LocationDetailView.swift */,
 				493227122538C8F0005E84A6 /* SearchView.swift */,
+				490DE02D253A05120009E674 /* AddView.swift */,
 			);
 			path = CovidGraphs;
 			sourceTree = "<group>";
@@ -540,6 +543,7 @@
 				D22072D72539F79D007E1CD6 /* Smoothing.swift in Sources */,
 				491609DC2533B16600ECDFC1 /* LocationDetailView.swift in Sources */,
 				493227132538C8F0005E84A6 /* SearchView.swift in Sources */,
+				490DE02E253A05120009E674 /* AddView.swift in Sources */,
 				4932270325388A87005E84A6 /* CovidData.swift in Sources */,
 				491609CF25335F9900ECDFC1 /* Utilities.swift in Sources */,
 				4985CEE8252BD3C500C78B5D /* CovidWidget.intentdefinition in Sources */,

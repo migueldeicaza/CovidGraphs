@@ -44,24 +44,32 @@ struct LocationView: View {
 
 struct CovidChartView: View {
     @Environment(\.redactionReasons) private var reasons
-
+    //var c: Color = Color ("BackgroundColor").colorMultiply(.accentColor)
     var stat: [Int]
+    var smooth: [Int] = []
     
     var body: some View {
         ZStack {
             //Color (.red)
             HStack {
                 VStack {
-                    Chart(data: reasons.isEmpty ? convertStats (stat, count: 20) :  [])
-                        .chartStyle(
-                           LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
+                    ZStack {
+                        Chart(data: reasons.isEmpty ? convertStats (stat, count: 20) :  [])
+                            .chartStyle(
+                                ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
 
-                        .background(
-                            GridPattern(horizontalLines: 8, verticalLines: 12)
-                               .inset(by: 1)
-                            .stroke(Color.white.opacity(0.1), style: .init(lineWidth: 1, lineCap: .round)))
 
-                        .frame(minHeight: 40, maxHeight: .infinity)
+                        Chart(data: reasons.isEmpty ? convertStats (smooth, count: 20) :  [])
+                            .chartStyle(
+                               LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
+
+                            .background(
+                                GridPattern(horizontalLines: 8, verticalLines: 12)
+                                   .inset(by: 1)
+                                .stroke(Color.white.opacity(0.1), style: .init(lineWidth: 1, lineCap: .round)))
+
+                    }
+                    .frame(minHeight: 40, maxHeight: .infinity)
                }
                //.layoutPriority(1)
             }
@@ -86,11 +94,11 @@ struct GeographyStatView: View {
                     LocationView(stat: stat)
                     switch family {
                     case .systemSmall:
-                        CovidChartView (stat: stat.casesDelta)
+                        CovidChartView (stat: stat.casesDelta, smooth: stat.casesDeltaSmooth)
                     default:
                         HStack (spacing: 20){
-                            CovidChartView (stat: stat.casesDelta)
-                            CovidChartView (stat: stat.deathsDelta)
+                            CovidChartView (stat: stat.casesDelta, smooth: stat.casesDeltaSmooth)
+                            CovidChartView (stat: stat.deathsDelta, smooth: stat.deathsDeltaSmooth)
                         }
                     }
                     //
