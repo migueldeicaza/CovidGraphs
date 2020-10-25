@@ -125,16 +125,17 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
     @Published public var stat: Stats? = nil
     public var code: String
     var tl: TrackedLocation!
-
+    var lock: NSLock? = nil
+    
     /// Creates an UpdatableStat with a `code` that reprensents one of the known locations that we have statistics for
-    public init (code: String)
+    public init (code: String, sync: Bool = false)
     {
         self.code = code
         self.tl = globalData.globals [code]
         
         if let existing = IndividualSnapshot.tryLoadCache(name: code) {
-            var current = Calendar.current
-            var components = current.dateComponents(in: current.timeZone, from: Date ())
+//            var current = Calendar.current
+//            var components = current.dateComponents(in: current.timeZone, from: Date ())
             
             // If it is fresh enough, no need to download
             if existing.time + TimeInterval(24*60*60) > Date () {
@@ -142,7 +143,13 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
                 return
             }
         }
-        fetchNewSnapshot ()
+        if sync {
+            lock = NSLock()
+        }
+        fetchNewSnapshot()
+        if sync {
+            lock?.lock ()
+        }
     }
     
     // This hash function set the uniqueness based on the address
@@ -157,30 +164,27 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
             lhs.tl == rhs.tl
     }
 
-    func fetchNewSnapshot (){
-        let url = URL(string: "https://tirania.org/covid-data/\(code)")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+    public func receivedData (data: Data?, response: URLResponse?, error: Error?)
+    {
+        guard error == nil else {
+            print ("error: \(error!)")
+            return
+        }
         
-        let task = URLSession.shared.dataTask(with: request) {(data, response, error) in
-            //print ("Response: \(response)")
-            guard error == nil else {
-                print ("error: \(error!)")
-                return
-            }
-            
-            guard let content = data else {
-                print("No data")
-                return
-            }
-            if let cacheFile = cacheFileForRegion(code: self.code) {
-                //print ("Saving to \(cacheFile)")
-                try! content.write(to: cacheFile)
-            }
-            let decoder = makeDecoder()
-            if let isnap = try? decoder.decode(IndividualSnapshot.self, from: content) {
-                // Put a sleep here to simulate slow network responses
-                //sleep(4)
+        guard let content = data else {
+            print("No data")
+            return
+        }
+        if let cacheFile = cacheFileForRegion(code: self.code) {
+            //print ("Saving to \(cacheFile)")
+            try! content.write(to: cacheFile)
+        }
+        let decoder = makeDecoder()
+        if let isnap = try? decoder.decode(IndividualSnapshot.self, from: content) {
+            if let l = lock {
+                self.stat = makeStat(trackedLocation: self.tl, snapshot: isnap.snapshot, date: isnap.time)
+                l.unlock()
+            } else {
                 DispatchQueue.main.async {
                     
                     self.stat = makeStat(trackedLocation: self.tl, snapshot: isnap.snapshot, date: isnap.time)
@@ -188,6 +192,15 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
                 }
             }
         }
+    }
+    
+    public func fetchNewSnapshot (session: URLSession? = nil){
+        let url = URL(string: "https://tirania.org/covid-data/\(code)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let task = (session ?? URLSession.shared).dataTask(with: request, completionHandler: receivedData(data:response:error:))
+        
         task.resume()
     }
 }
@@ -213,7 +226,6 @@ public class UpdatableLocations: ObservableObject {
 }
 
 extension IndividualSnapshot {
- 
     static public func tryLoadCache (name: String) -> IndividualSnapshot?
     {
         if let file = cacheFileForRegion(code: name) {

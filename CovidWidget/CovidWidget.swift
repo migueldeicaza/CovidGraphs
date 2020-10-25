@@ -147,21 +147,24 @@ struct Provider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        print ("Provider: getSnapshot()")
         let entry = SimpleEntry(date: Date(), configuration: configuration)
         completion(entry)
     }
 
     func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+        print ("Provider: getTimeline()")
         var entries: [SimpleEntry] = []
 
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
+        for hourOffset in 0 ..< 1 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
             let entry = SimpleEntry(date: entryDate, configuration: configuration)
             entries.append(entry)
         }
 
+        print ("REPORTING ONE FUTURE ENTRIES")
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
@@ -177,14 +180,10 @@ var cancel: [AnyCancellable] = []
 
 struct CovidWidgetEntryView : View {
     var entry: Provider.Entry
-    
+
     func startStat () -> UpdatableStat
     {
-        let s = UpdatableStat(code: "Massachusetts")
-        cancel.append (s.objectWillChange.sink(receiveValue: {
-            WidgetCenter.shared.reloadAllTimelines()
-        }))
-        widgets.append(s)
+        let s = UpdatableStat(code: "Massachusetts", sync: true)
         return s
     }
     
@@ -198,7 +197,7 @@ struct CovidWidgetEntryView : View {
 @main
 struct CovidWidget: Widget {
     let kind: String = "CovidWidget"
-
+    
     var body: some WidgetConfiguration {
         IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
             CovidWidgetEntryView(entry: entry)
@@ -206,7 +205,6 @@ struct CovidWidget: Widget {
         .configurationDisplayName("Covid Widget")
         .description("Display statistics Covid Statistics.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemSmall])
-
     }
 }
 
