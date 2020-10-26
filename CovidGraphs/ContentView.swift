@@ -56,6 +56,8 @@ struct StatDisplay: View {
 }
 
 struct SummaryLocationView: View {
+    let daysInSummary = 21
+    
     @Binding var loc: UpdatableStat
     var body: some View {
         ZStack {
@@ -88,21 +90,30 @@ struct SummaryLocationView: View {
                         }
                     }
                 }
-                Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: 40))
-                    .chartStyle(
-                        LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
-                    .shadow(color: Color.black.opacity(0.3),
-                            radius: 2,
-                            x: 1,
-                            y: 1)
+                ZStack {
+                    Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: daysInSummary))
+                        .chartStyle(
+                            ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
+                        .shadow(color: Color.black.opacity(0.3),
+                                radius: 2,
+                                x: 1,
+                                y: 1)
+                    
+                    Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: daysInSummary))
+                        .chartStyle(
+                            LineChartStyle(.quadCurve, lineColor: Color.purple, lineWidth: 1))
+                        .shadow(color: Color.black.opacity(0.3),
+                                radius: 2,
+                                x: 1,
+                                y: 1)
 
-                    .background(
-                        GridPattern(horizontalLines: 8, verticalLines: 12)
-                           .inset(by: 1)
-                            .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
-                    .padding ([.leading])
-                
+                        .background(
+                            GridPattern(horizontalLines: 8, verticalLines: 12)
+                               .inset(by: 1)
+                                .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
+                        .padding ([.leading])
 
+                }
             }.padding([.bottom, .top], 8)
         }
         .frame(minHeight: 60, maxHeight: 100)
@@ -232,22 +243,22 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView(locations: [
-                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Mexico"),
                 UpdatableStat(code: "Massachusetts"),
-                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code: "25021.0"),
                 UpdatableStat(code:"California")
             ])
             ContentView(locations: [
-                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Mexico"),
                 UpdatableStat(code: "Massachusetts"),
-                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code: "25021.0"),
                 UpdatableStat(code:"California")
             ])
             .environment(\.colorScheme, .dark)
             ContentView(locations: [
-                UpdatableStat(code: "Spain"),
+                UpdatableStat(code: "Mexico"),
                 UpdatableStat(code: "Massachusetts"),
-                UpdatableStat(code: "46005.0"),
+                UpdatableStat(code: "25021.0"),
                 UpdatableStat(code:"California")
             ])
             .environment(\.colorScheme, .dark)

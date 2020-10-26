@@ -16,23 +16,25 @@ import Combine
  *
  * - Parameter n: array of integers
  * - Parameter count: number of elements to fetch, or -1 if it should map all the elements, defaults to all the elements
+ * - Parameter scaleToZero: this determines whether the result normalizes from the [min,max] range or the [0, max] range, scaleToZero is the latter
+ * - Parameter ignoreNegatives: data coming from the site sometimes fixes historical data, which introduces negative values, if set to true, this clamps the value to zero, not exactly acurrate, but produces better graphs
  * - Returns: An array of up to `n` values where all the values have been scaled where the smallest value is 0,
  *   and the largest is 1, and every other value is in between
  */
-func convertStats (_ v: [Int], count: Int = -1) -> [CGFloat]
+func convertStats (_ v: [Int], count: Int = -1, scaleToZero: Bool = true, ignoreNegatives: Bool = true) -> [CGFloat]
 {
     let n = count == -1 ? v.count : count
     let subset = v.suffix(n)
-    if let min = subset.min () {
-        if let max = subset.max () {
-            let d = CGFloat (max-min)
-            var result: [CGFloat] = []
-    
-            for x in subset {
-                result.append(CGFloat (x-min) / d)
-            }
-            return result
+    let min = scaleToZero ? 0 : subset.min () ?? 0
+    if let max = subset.max () {
+        let d = CGFloat (max-min)
+        var result: [CGFloat] = []
+
+        for x in subset {
+            result.append((x < 0 && ignoreNegatives) ? 0.0 : CGFloat (x-min) / d)
         }
+        print ("result: \(result) ")
+        return result
     }
     return [0.0]
 }
