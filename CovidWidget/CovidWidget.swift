@@ -47,6 +47,7 @@ struct CovidChartView: View {
     //var c: Color = Color ("BackgroundColor").colorMultiply(.accentColor)
     var stat: [Int]
     var smooth: [Int] = []
+    var count = 20
     
     var body: some View {
         ZStack {
@@ -54,12 +55,12 @@ struct CovidChartView: View {
             HStack {
                 VStack {
                     ZStack {
-                        Chart(data: reasons.isEmpty ? convertStats (stat, count: 20) :  [])
+                        Chart(data: reasons.isEmpty ? convertStats (stat, count: count) :  [])
                             .chartStyle(
-                                ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
+                                ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 0.5))
 
 
-                        Chart(data: reasons.isEmpty ? convertStats (smooth, count: 20) :  [])
+                        Chart(data: reasons.isEmpty ? convertStats (smooth, count: count) :  [])
                             .chartStyle(
                                LineChartStyle(.quadCurve, lineColor: Color ("MainTextColor"), lineWidth: 2))
 
@@ -99,6 +100,7 @@ struct GeographyStatView: View {
                         HStack (spacing: 20){
                             CovidChartView (stat: stat.casesDelta, smooth: stat.casesDeltaSmooth)
                             CovidChartView (stat: stat.deathsDelta, smooth: stat.deathsDeltaSmooth)
+                            //CovidChartView (stat: stat.deathsDelta, smooth: stat.casesDelta, count: 200)
                         }
                     }
                     //
@@ -147,24 +149,29 @@ struct Provider: IntentTimelineProvider {
     }
 
     func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        print ("Provider: getSnapshot()")
         let entry = SimpleEntry(date: Date(), configuration: configuration)
         completion(entry)
     }
 
     func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        print ("Provider: getTimeline()")
-        var entries: [SimpleEntry] = []
+        // Entries, the first one is the current time
+        var entries: [SimpleEntry] = [SimpleEntry (date: Date (), configuration: configuration)]
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 1 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, configuration: configuration)
-            entries.append(entry)
+        
+        // The database around 5:45, and I leave some time for any late additions, so make it 6am
+        let current = Date()
+        if let est = TimeZone (abbreviation: "EST") {
+            var components = Calendar.current.dateComponents(in: est, from: current)
+            
+            // The cron job updates at 6am EST
+            components.hour = 6
+            components.minute = 10
+            if let morning = components.date {
+                var target = morning >= current ? morning : Calendar.current.date(byAdding: .day, value: 1, to: morning)
+                entries.append (SimpleEntry(date: morning, configuration: configuration))
+            }
         }
-
-        print ("REPORTING ONE FUTURE ENTRIES")
+        
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
