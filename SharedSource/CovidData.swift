@@ -123,6 +123,7 @@ func cacheFileForRegion (code: String) -> URL? {
 public class UpdatableStat: ObservableObject, Hashable, Equatable {
     /// This is the property that gets updated with new content
     @Published public var stat: Stats? = nil
+    @Published public var diagnostics: String? = nil
     public var code: String
     var tl: TrackedLocation!
     var lock: NSLock? = nil
@@ -167,12 +168,14 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
     public func receivedData (data: Data?, response: URLResponse?, error: Error?)
     {
         guard error == nil else {
+            diagnostics = error.debugDescription
             print ("error: \(error!)")
             return
         }
         
         guard let content = data else {
             print("No data")
+            diagnostics = "No data"
             return
         }
         if let cacheFile = cacheFileForRegion(code: self.code) {

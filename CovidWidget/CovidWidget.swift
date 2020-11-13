@@ -57,7 +57,7 @@ struct CovidChartView: View {
                     ZStack {
                         Chart(data: reasons.isEmpty ? convertStats (stat, count: count) :  [])
                             .chartStyle(
-                                ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 0.5))
+                                MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 0.5))
 
 
                         Chart(data: reasons.isEmpty ? convertStats (smooth, count: count) :  [])

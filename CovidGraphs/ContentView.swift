@@ -93,13 +93,13 @@ struct SummaryLocationView: View {
                 ZStack {
                     Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: daysInSummary))
                         .chartStyle(
-                            ColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
+                            MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
                         .shadow(color: Color.black.opacity(0.3),
                                 radius: 2,
                                 x: 1,
                                 y: 1)
                     
-                    Chart(data: convertStats (loc.stat?.casesDelta ?? [], count: daysInSummary))
+                    Chart(data: convertStats (loc.stat?.casesDeltaSmooth ?? [], count: daysInSummary))
                         .chartStyle(
                             LineChartStyle(.quadCurve, lineColor: Color.purple, lineWidth: 1))
                         .shadow(color: Color.black.opacity(0.3),
@@ -111,9 +111,9 @@ struct SummaryLocationView: View {
                             GridPattern(horizontalLines: 8, verticalLines: 12)
                                .inset(by: 1)
                                 .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
-                        .padding ([.leading])
+                        
 
-                }
+                }.padding ([.leading])
             }.padding([.bottom, .top], 8)
         }
         .frame(minHeight: 60, maxHeight: 100)
@@ -242,6 +242,7 @@ struct HeaderView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
+            SummaryLocationView (loc: .constant (UpdatableStat(code: "Massachusetts")))
             ContentView(locations: [
                 UpdatableStat(code: "Mexico"),
                 UpdatableStat(code: "Massachusetts"),
