@@ -9,18 +9,24 @@
 import SwiftUI
 
 struct SearchView: View {
+    struct Item: Identifiable {
+        let id = UUID()
+        var code: String = ""
+    }
+
     var array = prettifiedLocations
     @State private var searchText = ""
     @State private var showCancelButton: Bool = false
-
-    func filteredArray () -> [String]
+    @State private var previewItem: Item?
+    
+    func filteredArray () -> [Pretty]
     {
         let chunks = searchText.split (separator: " ")
         
         if searchText == "" {
             return array
         }
-        return array.filter { element in chunks.allSatisfy { v in element.range (of: v, options: .caseInsensitive) != nil } }
+        return array.filter { element in chunks.allSatisfy { v in element.visible.range (of: v, options: .caseInsensitive) != nil } }
     }
     
     var body: some View {
@@ -63,11 +69,22 @@ struct SearchView: View {
                 List {
                     // Filtered list of names
                     ForEach(filteredArray (), id: \.self) {
-                        searchText in Text(searchText)
+                        slot in
+                        HStack {
+                            Text(slot.visible)
+                                .onTapGesture {
+                                    self.previewItem = Item (code: slot.code)
+                                }
+                        }
                     }
                 }
                 .navigationBarTitle(Text("Search"))
                 .resignKeyboardOnDragGesture()
+                .sheet(item: $previewItem, onDismiss: { self.previewItem = nil }) {
+                    
+                        LocationDetailView(stat: fetch (code: $0.code))
+                    
+                }
             }
         }
     }

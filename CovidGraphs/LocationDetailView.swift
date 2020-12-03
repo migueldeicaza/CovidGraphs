@@ -129,16 +129,23 @@ struct LabeledChart: View {
         VStack {
             HStack {
                 ZStack {
-                    Chart(data: convertStats (data, count: days))
-                        .chartStyle(
-                            MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
-                            //LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
+                    Group {
+                        if days > 0 && days < 60 {
+                            Chart(data: convertStats (data, count: days))
+                                .chartStyle(
+                                    MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
+                        } else {
+                            Chart(data: convertStats (data, count: days))
+                                .chartStyle(
+                                    LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
 
-                        .background(
-                            GridPattern(horizontalLines: slots + 1, verticalLines: slots + 1)
-                               .inset(by: 1)
-                                .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
-                       
+                        }
+                    }
+                    .background(
+                        GridPattern(horizontalLines: slots + 1, verticalLines: slots + 1)
+                           .inset(by: 1)
+                            .stroke(Color (.secondaryLabel).opacity(0.2), style: .init(lineWidth: 1, lineCap: .round)))
+
                     HStack {
                         VStack {
                             Text (overlay)

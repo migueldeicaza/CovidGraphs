@@ -30,6 +30,7 @@ func convertStats (_ v: [Int], count: Int = -1, scaleToZero: Bool = true, ignore
         let d = CGFloat (max-min)
         var result: [CGFloat] = []
 
+        print ("subset has \(subset.count)")
         for x in subset {
             result.append((x < 0 && ignoreNegatives) ? 0.0 : CGFloat (x-min) / d)
         }

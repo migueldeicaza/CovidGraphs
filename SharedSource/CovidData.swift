@@ -266,28 +266,38 @@ public var globalData: GlobalData = {
     abort ()
 }()
 
-var _sortedData: [String] = []
+var _sortedData: [Pretty] = []
 
 func sortBySubcaption (first: TrackedLocation, second: TrackedLocation) -> Bool {
     return ("\(first.countryRegion ?? ""), \(first.proviceState ?? ""), \(first.admin ?? "")") <
     ("\(second.countryRegion ?? ""), \(second.proviceState ?? ""), \(second.admin ?? "")")
 }
 
-public var prettifiedLocations: [String] = {
+// Contains the user visible code and the code to look this value up
+public struct Pretty: Hashable {
+    var visible: String
+    var code: String
+}
+
+public var prettifiedLocations: [Pretty] = {
     if _sortedData.count != 0 {
         return _sortedData
     }
-    let sorted = globalData.globals.values.sorted(by: sortBySubcaption(first:second:))
-    for v in sorted {
+    let sorted = globalData.globals.sorted(by: { x, y in sortBySubcaption(first: x.value, second: y.value) })
+    
+    for slot in sorted {
+        let v = slot.value
+        var visible: String
         if (v.admin ?? "") == "" {
             if (v.proviceState ?? "") == "" {
-                _sortedData.append(v.countryRegion ?? "")
+                visible = v.countryRegion ?? ""
             } else {
-                _sortedData.append("\(v.proviceState ?? ""), \(v.countryRegion ?? "")")
+                visible = "\(v.proviceState ?? ""), \(v.countryRegion ?? "")"
             }
         } else {
-            _sortedData.append("\(v.admin ?? ""), \(v.proviceState ?? ""), \(v.countryRegion ?? "")")
+            visible = "\(v.admin ?? ""), \(v.proviceState ?? ""), \(v.countryRegion ?? "")"
         }
+        _sortedData.append (Pretty (visible: visible, code: slot.key))
     }
     return _sortedData
 }()

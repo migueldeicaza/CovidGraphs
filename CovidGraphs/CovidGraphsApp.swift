@@ -10,7 +10,7 @@ import SwiftUI
 @main
 struct CovidGraphsApp: App {
     @AppStorage ("locations")
-    var locations: String = "Massachusetts,California,Mexico,25021.0,Brazil"
+    var locations: String = "Massachusetts,California,Mexico,25021.0,25025.0,Vermont"
     
     func makeLocations (input: String) -> [UpdatableStat]
     {
