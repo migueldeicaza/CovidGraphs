@@ -7,6 +7,8 @@ is launched from the widget view.   This consumes data that has been
 preprocessed to make it available as a small download for just
 the necessary parts.
 
+Check out the [Getting Started Guide](/Getting%20Started%20Guide/README.md)
+
 <img width="545" alt="image" src="https://user-images.githubusercontent.com/36863/96198599-53da0080-0f23-11eb-9713-2ad02c2a3ca8.png">
 
 <img width="545" alt="image" src="https://user-images.githubusercontent.com/36863/96198552-2ee58d80-0f23-11eb-9922-b4ec0083bf5b.png">
