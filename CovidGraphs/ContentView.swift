@@ -168,7 +168,7 @@ struct ContentView: View {
                         Spacer ()
                         Button (action: onAdd, label: {
                             Image (systemName: "plus")
-                                //.font(.system(.title2))
+                                .font(.system(.title))
                                 .foregroundColor(.accentColor)
                                 
                         }).padding (10)
