@@ -92,6 +92,7 @@ struct TimeSelectorView: View {
 
 struct LabeledChart: View {
     @Binding var data: [Int]
+    @Binding var smooth: [Int]
     @Binding var days: Int
     @State var overlay: String
     let slots = 4
@@ -130,15 +131,24 @@ struct LabeledChart: View {
             HStack {
                 ZStack {
                     Group {
-                        if days > 0 && days < 60 {
-                            Chart(data: convertStats (data, count: days))
+                        ZStack {
+                            if days > 0 && days < 60 {
+                                Chart(data: convertStats (data, count: days))
+                                    .chartStyle(
+                                        MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")), spacing: 2))
+                            } else {
+                                Chart(data: convertStats (data, count: days))
+                                    .chartStyle(
+                                        LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
+                                
+                            }
+                            Chart(data: convertStats (smooth, count: days))
                                 .chartStyle(
-                                    MyColumnChartStyle(column: Capsule().foregroundColor(Color ("BackgroundColor")).blendMode(.screen), spacing: 2))
-                        } else {
-                            Chart(data: convertStats (data, count: days))
-                                .chartStyle(
-                                    LineChartStyle(.quadCurve, lineColor: Color.accentColor, lineWidth: 2))
-
+                                    LineChartStyle(.quadCurve, lineColor: Color.purple, lineWidth: 1))
+                                .shadow(color: Color.black.opacity(0.3),
+                                        radius: 2,
+                                        x: 1,
+                                        y: 1)
                         }
                     }
                     .background(
@@ -196,9 +206,9 @@ struct LocationDetailView: View {
             Divider ()
             ScrollView {
                 TimeSelectorView (days: $days)
-                LabeledChart (data: $stat.casesDelta, days: $days, overlay: "Cases")
+                LabeledChart (data: $stat.casesDelta, smooth: $stat.casesDeltaSmooth, days: $days, overlay: "Cases")
                     .frame (minHeight: 200)
-                LabeledChart (data: $stat.deathsDelta, days: $days, overlay: "Deaths")
+                LabeledChart (data: $stat.deathsDelta, smooth: $stat.deathsDeltaSmooth, days: $days, overlay: "Deaths")
                     .frame (minHeight: 200)
             }
         }.onAppear {

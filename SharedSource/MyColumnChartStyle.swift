@@ -32,7 +32,6 @@ public struct MyColumnChartStyle<Column: View>: ChartStyle {
             ForEach(data) { element in
                 self.column
                     .alignmentGuide(.leading, computeValue: { x in
-                                        print ("\(x)")
                                         return geometry.size.width - self.leadingAlignmentGuide(for: element.id, in: geometry.size.width, dataCount: data.count) })
                     .alignmentGuide(.bottom, computeValue: { _ in self.columnHeight(data: element.data, in: geometry.size.height) })
                     .frame(width: columnWidth, height: self.columnHeight(data: element.data, in: geometry.size.height))
@@ -50,7 +49,6 @@ public struct MyColumnChartStyle<Column: View>: ChartStyle {
         
         let columnWidth = (availableWidth - (CGFloat(dataCount - 1) * spacing)) / CGFloat(dataCount)
         let ret = (CGFloat(index) * columnWidth) + (CGFloat(index - 1) * spacing)
-        print ("index: \(index) -> \(ret)")
         return ret
     }
     
