@@ -8,17 +8,19 @@
 
 import SwiftUI
 
-struct SearchView: View {
-    struct Item: Identifiable {
-        let id = UUID()
-        var code: String = ""
-    }
+struct Item: Identifiable {
+    let id = UUID()
+    var code: String = ""
+}
 
+struct SearchView: View {
     var array = prettifiedLocations
     @State private var searchText = ""
     @State private var showCancelButton: Bool = false
     @State private var previewItem: Item?
-    
+    @State var showingDetail: Bool = false
+    @ObservedObject var locations: UpdatableLocations
+
     func filteredArray () -> [Pretty]
     {
         let chunks = searchText.split (separator: " ")
@@ -74,16 +76,17 @@ struct SearchView: View {
                             Text(slot.visible)
                                 .onTapGesture {
                                     self.previewItem = Item (code: slot.code)
+                                    self.showingDetail = true
                                 }
                         }
                     }
                 }
                 .navigationBarTitle(Text("Search"))
                 .resignKeyboardOnDragGesture()
-                .sheet(item: $previewItem, onDismiss: { self.previewItem = nil }) {
-                    
-                        LocationDetailView(stat: fetch (code: $0.code))
-                    
+                .sheet(item: $previewItem, onDismiss: {
+                    self.previewItem = nil
+                }) {
+                    PreviewLocation (stat: fetch (code: $0.code), showing: $previewItem, locations: locations)
                 }
             }
         }
@@ -92,11 +95,11 @@ struct SearchView: View {
 
 struct PresentSearchAsSheet: View {
     @Binding var showSearch: Bool
-    
+    @ObservedObject var locations: UpdatableLocations
     var body: some View {
         VStack {
             ZStack {
-                SearchView ()
+                SearchView (locations: locations)
 //                VStack {
 //                    HStack {
 //                        Spacer ()
@@ -138,7 +141,9 @@ extension View {
 }
 
 struct SearchView_Previews: PreviewProvider {
+    
     static var previews: some View {
-        SearchView()
+        //SearchView(locations: [])
+        Text ("")
     }
 }

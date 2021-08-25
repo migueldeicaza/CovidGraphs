@@ -225,7 +225,7 @@ public class UpdatableLocations: ObservableObject {
             // otherwise the sink subscription gets cancelled
             self.cancellables.append(c)
         })
-    }
+    }    
 }
 
 extension IndividualSnapshot {

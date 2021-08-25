@@ -264,6 +264,36 @@ struct PresentLocationAsSheet: View {
     }
 }
 
+///
+/// Shows a LocationDetailView with a close button
+///
+struct PreviewLocation: View {
+    var stat: Stats
+    @Binding var showing: Item?
+    @ObservedObject var locations: UpdatableLocations
+    
+    var body: some View {
+        VStack {
+            ZStack {
+                LocationDetailView (stat: stat)
+                VStack {
+                    HStack {
+                        Spacer ()
+                        Button(action: {
+                            self.showing = nil
+                            locations.stats.append(<#T##newElement: UpdatableStat##UpdatableStat#>)
+                        }) {
+                            Image(systemName: "rectangle.stack.fill.badge.plus")
+                                .font(.system(size: 24, weight: .regular))
+                                .padding([.trailing], 10)
+                        }
+                    }
+                    Spacer ()
+                }
+            }
+        }.padding (.top, 10)
+    }
+}
 struct LocationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Group {

@@ -185,7 +185,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingSheet) {
             if tapTracker.showSearch {
-                PresentSearchAsSheet (showSearch: $showingSheet)
+                PresentSearchAsSheet (showSearch: $showingSheet, locations: locations)
             } else {
                 PresentLocationAsSheet (stat: tapTracker.stat!, showingDetail: $showingSheet)
             }
