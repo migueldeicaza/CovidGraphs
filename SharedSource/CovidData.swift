@@ -198,7 +198,11 @@ public class UpdatableStat: ObservableObject, Hashable, Equatable {
     }
     
     public func fetchNewSnapshot (session: URLSession? = nil){
-        let url = URL(string: "https://tirania.org/covid-data/\(code)")!
+        let urlAllowed: CharacterSet =
+            .alphanumerics.union(.init(charactersIn: "-._~")) // as per RFC 3986
+        
+        let url = URL(string: "https://tirania.org/covid-data/\(code.addingPercentEncoding(withAllowedCharacters: urlAllowed)!)")!
+        print(url)
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
